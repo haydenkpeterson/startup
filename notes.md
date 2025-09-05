@@ -8,6 +8,10 @@
 - [Canvas](https://byu.instructure.com)
 - [MDN](https://developer.mozilla.org)
 
+## GITHUB
+
+I refreshed my memory of Git commands and their purposes. I also refamiliarized myself with Visual Studio Code, and how to use Git commands through Source Control.
+
 ## AWS
 
 My IP address is: 54.81.96.130
