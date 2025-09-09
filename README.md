@@ -32,15 +32,6 @@ Small businesses also need to keep their finances in order. This app will allow 
 
 ![Design image](images/STARTUP.png)
 
-Simple sequence diagram for uploading pdf
-
-```mermaid
-sequenceDiagram
-    actor User
-    User->>Server: PDF
-    Server -->>User: Results
-```
-
 ### Key features
 
 - Secure login
