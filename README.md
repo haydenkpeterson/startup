@@ -2,7 +2,7 @@
 
 [My Notes](notes.md)
 
-A brief description of the application here. I made another change, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+A web app that users can upload financial statements and recieve an AI audit. Specifically made for small businesses. Won't have all functionality in this class, but will be able to add OpenAI API calls.
 
 
 > [!NOTE]
@@ -18,45 +18,50 @@ A brief description of the application here. I made another change, consectetur 
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
+- [x] Description of how you will use each technology
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Small businesses also need to keep their finances in order. This app will allow users to upload their financial statements in PDF format and utilize AI to analyze the documents and highlight problem areas such as unexpected account balances or unexplained transactions.
 
 ### Design
 
-![Design image](placeholder.png)
+![Design image](images/STARTUP.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Simple sequence diagram for uploading pdf
 
 ```mermaid
 sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
+    actor User
+    User->>Server: PDF
+    Server -->>User: Results
 ```
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Secure login
+- File upload
+- PDF file analysis through OpenAI API
+- Results pop-up with real time updates
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Two pages. One landing page with login. one with PDF Upload.
+- **CSS** - Styling that is functional and professional.
+- **React** - Provides login, file upload, results page popup, and displaying pdf.
+- **Service** - Backend service with endpoints for
+    - login
+    - uploading files
+    - calling OpenAI API to anaylze files
+    - retrieving status
+- **DB/Login** - Manages user data and authentication credentials securely.
+- **WebSocket** - Real-time results from backend to frontend
 
 ## 🚀 AWS deliverable
 
