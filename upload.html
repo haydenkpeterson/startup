@@ -13,6 +13,7 @@
           <li><a href="landing.html">Home</a></li>
           <li><a href="upload.html">Upload</a></li>
           <li><a href="login.html">Login</a></li>
+
         </ul>
       </nav>
       <hr />
@@ -20,12 +21,13 @@
 
     <main>
       <h2>Select a file to upload</h2>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" id="file" name="file" />
+      <!-- Placeholder for OpenAI backend processing -->
+      <form action="/api/openai" method="post" enctype="multipart/form-data">
+        <input type="file" id="file" name="file" required />
         <br /><br />
-        <button type="submit">Upload</button>
+        <button type="submit">Process with AI</button>
       </form>
-      <p><em>(Currently unavailable.)</em></p>
+      <p><em>(File will be sent to backend for AI processing.)</em></p>
     </main>
 
     <footer>
