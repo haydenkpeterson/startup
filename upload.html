@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Files</title>
+  </head>
+  <body>
+    <header>
+      <h1>Upload Files</h1>
+      <nav>
+        <ul>
+          <li><a href="landing.html">Home</a></li>
+          <li><a href="upload.html">Upload</a></li>
+          <li><a href="login.html">Login</a></li>
+        </ul>
+      </nav>
+      <hr />
+    </header>
+
+    <main>
+      <h2>Select a file to upload</h2>
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="file" name="file" />
+        <br /><br />
+        <button type="submit">Upload</button>
+      </form>
+      <p><em>(Currently unavailable.)</em></p>
+    </main>
+
+    <footer>
+      <hr />
+      <small>&copy; <span id="year"></span> Hayden Peterson</small>
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
