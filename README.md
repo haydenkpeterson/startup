@@ -70,9 +70,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Text** - Added textual content to explain webpage and elements.
 - [x] **3rd party API placeholder** - created a placeholder for my api calls.
 - [ ] **Images** - I did not complete this part of the deliverable.
-- [x] **Login placeholder** - created a placeholder for login.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [x] **WebSocket placeholder** - created a placeholder for websocket messages from api call.
+- [x] **Login placeholder** - created a placeholder for login in login.html.
+- [x] **DB data placeholder** - created a placeholder for database of previously uploaded files in login.html.
+- [x] **WebSocket placeholder** - created a placeholder for websocket messages from api call in upload.html.
 
 ## 🚀 CSS deliverable
 
