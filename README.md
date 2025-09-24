@@ -64,15 +64,15 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - Created 3 html pages. One landing page, one upload page, and one login page.
+- [x] **Proper HTML element usage** - used html elements to create a functional scaffolding.
+- [x] **Links** - created links between pages, and a link to my github repo.
+- [x] **Text** - Added textual content to explain webpage and elements.
+- [x] **3rd party API placeholder** - created a placeholder for my api calls.
 - [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
+- [x] **Login placeholder** - created a placeholder for login.
 - [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **WebSocket placeholder** - created a placeholder for websocket messages from api call.
 
 ## 🚀 CSS deliverable
 
