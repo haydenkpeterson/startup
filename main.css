@@ -2,62 +2,60 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 375px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
   margin: 0;
-  background-color: #f9f9f9;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #1a1a1a;
+  line-height: 1.6;
 }
-
 header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 0.5em 2em;
   flex: 0 80px;
-  text-align: center;
-  background-color: #0e1a2b;
-  color: white;
-  padding: 1em 0;
 }
 
 header img {
   height: 80px;
 }
 
-main {
-  flex: 1 calc(100vh - 110px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  text-align: center;
-}
-
-footer {
-  flex: 0 30px;
-  background-color: #0e1a2b;
-  color: white;
-  text-align: center;
-  padding: 0.5em 0;
-}
-
 nav ul {
   display: flex;
-  flex-direction: row !important;
+  flex-direction: row;
   list-style: none;
-  justify-content: center;
-  padding: 0;
   margin: 0;
-  background-color: #142a44;
+  padding: 0;
 }
 
 nav ul li {
-  padding: 0.5em 1em;
+  margin-left: 1.5em;
 }
 
 nav ul li a {
-  color: #e6e6e6;
+  color: #0e1a2b;
   text-decoration: none;
+  font-weight: bold;
 }
 
 nav ul li a:hover {
   color: #34c759;
 }
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        
+  justify-content: center;    
+  text-align: center;       
+  max-width: 800px;           
+  margin: 0 auto;             
+  padding: 2em;               
+}
+
 
 button {
   background-color: #34c759;
