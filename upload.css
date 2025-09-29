@@ -1,0 +1,144 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-width: 375px;
+  font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+html, body {
+  height: 100%;          
+  margin: 0;              
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 0.5em 2em;
+  border-bottom: 1px solid #ddd;
+}
+
+h1 {
+  font-size: 1.6em;
+  color: #0e1a2b;
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  margin-left: 1.5em;
+}
+
+nav ul li a {
+  color: #0e1a2b;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+nav ul li a:hover {
+  color: #34c759;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1em 0.5em; /* was 2em 1em */
+  max-width: 700px; /* slightly narrower */
+  margin: 0 auto;
+}
+
+main h2 {
+  color: #0e1a2b;
+  margin: 0.5em 0; /* tighter vertical spacing */
+}
+
+/*UPLOAD FORM*/
+form {
+  margin-top: 1em;
+  background: white;
+  padding: 1.5em 2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+input[type="file"] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.4em;
+  background-color: #fff;
+}
+
+button {
+  background-color: #34c759;
+  color: white;
+  border: none;
+  padding: 0.7em 1.8em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  margin-top: 1em;
+}
+
+button:hover {
+  background-color: #2da84f;
+  transform: scale(1.03);
+}
+
+/* WEBSOCKET */
+.realtime-updates {
+  display: inline-block;
+  width: auto;
+  padding: 0.4em 1em;
+  border: 1px dashed #aaa;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 0.5em;
+}
+
+footer {
+  background-color: #0e1a2b;
+  color: white;
+  text-align: center;
+  padding: 0.2em 0;
+  font-size: 0.8em;
+}
+
+footer hr {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  nav ul li {
+    margin-left: 0.8em;
+  }
+
+  form {
+    padding: 1em;
+  }
+
+  input[type="file"] {
+    width: 100%;
+  }
+}
