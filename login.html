@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="login.css" />
   </head>
   <body>
     <header>
@@ -20,7 +20,7 @@
     </header>
 
     <main>
-      <h2>Please sign in</h2>
+      <h2>Sign in</h2>
       <form action="/login" method="post">
         <label for="username">Username:</label><br />
         <input type="text" id="username" name="username" required />
@@ -33,6 +33,13 @@
         <button type="submit">Login</button>
       </form>
       <p><em>(Note: currently unavailable.)</em></p>
+
+      <hr />
+
+      <section id="user-display">
+        <h2>Welcome, <span id="display-username">[username]</span>!</h2>
+        <p>This section will display username after login once the backend is connected.</p>
+      </section>
 
       <hr />
 
@@ -75,6 +82,8 @@
     </footer>
 
     <script>
+      const usernamePlaceholder = "user"; // Replace with backend username later
+      document.getElementById("display-username").textContent = usernamePlaceholder;
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>
   </body>

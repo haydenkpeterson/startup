@@ -69,7 +69,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Links** - created links between pages, and a link to my github repo.
 - [x] **Text** - Added textual content to explain webpage and elements.
 - [x] **3rd party API placeholder** - created a placeholder for my api calls.
-- [ ] **Images** - I did not complete this part of the deliverable.
+- [x] **Images** - I did not complete this part of the deliverable.
 - [x] **Login placeholder** - created a placeholder for login in login.html.
 - [x] **DB data placeholder** - created a placeholder for database of previously uploaded files in login.html.
 - [x] **WebSocket placeholder** - created a placeholder for websocket messages from api call in upload.html.
@@ -78,7 +78,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Header, footer, and main content body** - I did not complete this part of the deliverable.
+- [x] **Header, footer, and main content body** - I created styling for each portion of my html.
 - [ ] **Navigation elements** - I did not complete this part of the deliverable.
 - [ ] **Responsive to window resizing** - I did not complete this part of the deliverable.
 - [ ] **Application elements** - I did not complete this part of the deliverable.

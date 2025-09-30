@@ -1,0 +1,197 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-width: 375px;
+  font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 0.5em 2em;
+  border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+  font-size: 1.6em;
+  color: #0e1a2b;
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  margin-left: 1.5em;
+}
+
+nav ul li a {
+  color: #0e1a2b;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+nav ul li a:hover {
+  color: #34c759;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2em 1em;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+main h2 {
+  color: #0e1a2b;
+  margin-bottom: 1em;
+}
+
+/* LOGIN FORM*/
+form {
+  background: white;
+  padding: 1.5em 2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: left;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2em;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3em;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.6em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #34c759;
+  outline: none;
+}
+
+#user-display {
+  background: white;
+  padding: 1em 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+#user-display h2 {
+  color: #34c759;
+  margin-bottom: 0.3em;
+}
+
+#user-display p {
+  color: #555;
+  font-size: 0.9em;
+}
+
+button {
+  background-color: #34c759;
+  color: white;
+  border: none;
+  padding: 0.7em 1.8em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  margin-top: 1em;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #2da84f;
+  transform: scale(1.03);
+}
+
+p em {
+  color: #555;
+}
+
+/* DATABASE PLACEHOLDER*/
+table {
+  width: 100%;
+  max-width: 700px;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 1em;
+}
+
+thead {
+  background-color: #0e1a2b;
+  color: white;
+}
+
+th,
+td {
+  padding: 0.8em;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+footer {
+  background-color: #0e1a2b;
+  color: white;
+  text-align: center;
+  padding: 0.2em 0;
+  font-size: 0.8em;
+}
+
+footer hr {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  nav ul li {
+    margin-left: 0.8em;
+  }
+
+  form {
+    padding: 1em;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    font-size: 0.9em;
+  }
+}
