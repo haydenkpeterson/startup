@@ -82,7 +82,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Navigation elements** - I styled navigation elements with a button that is green when hovered over.
 - [x] **Responsive to window resizing** - Is responsive to window resizing.
 - [x] **Application elements** - Styled it to taste.
-- [x] **Application text content** - Styled my text professionally.
+- [x] **Application text content** - Styled my text to look professional.
 - [x] **Application images** - Put my app logo in the upper left corner.
 
 ## 🚀 React part 1: Routing deliverable

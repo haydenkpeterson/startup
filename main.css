@@ -1,103 +1,155 @@
+/* GLOBAL RESET */
+* {
+  box-sizing: border-box;
+}
+
+/* PAGE STRUCTURE */
+html, body {
+  height: 100%; /* ✅ makes flexbox layout fill the full viewport */
+}
+
 body {
   display: flex;
   flex-direction: column;
-  min-width: 375px;
+  min-height: 100vh; /* ✅ ensures footer stays pinned to bottom */
   font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f5f7fa;
   color: #1a1a1a;
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: hidden; /* ✅ prevents horizontal scrolling */
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-html, body {
-  height: 100%;          
-  margin: 0;              
-  display: flex;
-  flex-direction: column;
-}
-
+/* HEADER */
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start; /* ✅ keeps nav next to logo */
   background: white;
-  padding: 0.5em 2em;
-  flex: 0 80px;
+  padding: 0.8em 1.5em;
+  border-bottom: 1px solid #ddd;
+  gap: 2em;
+  width: 100%;
+  margin: 0;
+  flex-wrap: wrap; /* ✅ allows wrapping instead of stacking under logo */
 }
 
-header img {
-  height: 80px;
+/* LOGO */
+.logo {
+  height: 60px;
+  display: block;
+  flex-shrink: 0; /* ✅ prevents logo from shrinking */
+}
+
+/* NAVIGATION */
+nav {
+  flex: 1; /* ✅ allows nav to fill remaining space beside logo */
 }
 
 nav ul {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap; /* ✅ allows wrapping instead of dropping below */
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-nav ul li {
-  margin-left: 1.5em;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.2em;
 }
 
 nav ul li a {
   color: #0e1a2b;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+  white-space: nowrap;
 }
 
-nav ul li a:hover {
+nav ul li a:hover,
+nav ul li a.active {
   color: #34c759;
 }
 
+/* MAIN CONTENT */
 main {
-  flex: 1;
+  flex: 1; /* ✅ expands to fill space between header & footer */
   display: flex;
   flex-direction: column;
-  align-items: center;        
-  justify-content: center;    
-  text-align: center;       
-  max-width: 800px;           
-  margin: 0 auto;             
-  padding: 2em;               
+  align-items: center;
+  text-align: center;
+  padding: 2em 1em;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-
-button {
-  background-color: #34c759;
-  color: white;
-  border: none;
-  padding: 0.6em 1.5em;
-  border-radius: 4px;
-  cursor: pointer;
+main h2 {
+  color: #0e1a2b;
+  margin-bottom: 1em;
 }
 
-button:hover {
-  background-color: #2da84f;
+main p {
+  font-size: 1.1em;
+  margin: 0.5em 0;
 }
 
+main a {
+  color: #34c759;
+  text-decoration: none;
+}
+
+main a:hover {
+  text-decoration: underline;
+}
+
+/* LOGO INSIDE MAIN */
+.main-logo {
+  margin-top: 2em;
+  height: 100px;
+  opacity: 0.9;
+}
+
+/* FOOTER */
 footer {
   background-color: #0e1a2b;
   color: white;
   text-align: center;
-  padding: 0.2em 0;
+  padding: 0.6em 0;
   font-size: 0.8em;
+  width: 100%;
+  margin-top: auto; /* ✅ locks footer to bottom */
+  border-top: 1px solid #0b1524;
 }
 
-@media (max-height: 600px) {
-  header, footer {
-    display: none;
+/* ✅ MOBILE RESPONSIVENESS */
+@media (max-width: 600px) {
+  header {
+    flex-wrap: wrap;
+    justify-content: flex-start; /* ✅ keeps nav beside logo */
+    padding: 0.8em 1em;
+    gap: 1em;
   }
+
+  .logo {
+    height: 50px;
+  }
+
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1em;
+  }
+
+  nav ul li a {
+    font-size: 0.9em;
+  }
+
   main {
-    flex: 1 100vh;
+    padding: 1.2em;
+  }
+
+  .main-logo {
+    height: 80px;
   }
 }

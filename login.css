@@ -1,7 +1,13 @@
+/* GLOBAL RESET */
+* {
+  box-sizing: border-box;
+}
+
+/* BODY */
 body {
   display: flex;
   flex-direction: column;
-  min-width: 375px;
+  min-height: 100vh; /* ✅ ensures page fills full height */
   font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
@@ -11,31 +17,42 @@ body {
   overflow-x: hidden;
 }
 
+/* HEADER */
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start; /* ✅ keeps nav next to logo */
   background: white;
-  padding: 0.5em 2em;
+  padding: 0.8em 1.5em;
   border-bottom: 1px solid #ddd;
+  gap: 2em;
+  width: 100%;
+  margin: 0;
+  flex-wrap: wrap; /* ✅ allows wrapping instead of stacking under logo */
 }
 
-header h1 {
-  font-size: 1.6em;
-  color: #0e1a2b;
-  margin: 0;
+/* LOGO */
+.logo {
+  height: 60px;
+  display: block;
+  flex-shrink: 0; /* ✅ prevents logo from shrinking */
+}
+
+/* NAVIGATION */
+nav {
+  flex: 1; /* ✅ allows nav to fill remaining space beside logo */
 }
 
 nav ul {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap; /* ✅ allows wrapping instead of dropping below */
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-nav ul li {
-  margin-left: 1.5em;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.2em;
 }
 
 nav ul li a {
@@ -43,14 +60,17 @@ nav ul li a {
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
+  white-space: nowrap;
 }
 
-nav ul li a:hover {
+nav ul li a:hover,
+nav ul li a.active {
   color: #34c759;
 }
 
+/* MAIN CONTENT */
 main {
-  flex: 1;
+  flex: 1; /* ✅ pushes footer to bottom when content is short */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -58,6 +78,7 @@ main {
   padding: 2em 1em;
   max-width: 800px;
   margin: 0 auto;
+  width: 100%; /* ✅ prevents layout squeeze on tablets */
 }
 
 main h2 {
@@ -65,10 +86,10 @@ main h2 {
   margin-bottom: 1em;
 }
 
-/* LOGIN FORM*/
+/* FORM */
 form {
   background: white;
-  padding: 1.5em 2em;
+  padding: 1.8em 2em;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   text-align: left;
@@ -80,17 +101,19 @@ form {
 label {
   font-weight: 600;
   display: block;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.4em;
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="file"] {
   width: 100%;
   padding: 0.6em;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1em;
-  box-sizing: border-box;
+  margin-bottom: 1em;
+  background: #fff;
 }
 
 input:focus {
@@ -98,10 +121,38 @@ input:focus {
   outline: none;
 }
 
+/* BUTTONS */
+button {
+  background-color: #34c759;
+  color: white;
+  border: none;
+  padding: 0.7em 1.8em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  width: 100%;
+  margin-top: 0.6em;
+}
+
+button:hover {
+  background-color: #2da84f;
+  transform: scale(1.03);
+}
+
+.create-account {
+  background-color: #0e1a2b;
+}
+
+.create-account:hover {
+  background-color: #162b46;
+}
+
+/* USER DISPLAY PLACEHOLDER */
 #user-display {
   background: white;
-  padding: 1em 1.5em;
-  border-radius: 8px;
+  padding: 1.2em 1.5em;
+  border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   margin: 1.5em 0;
   text-align: center;
@@ -112,43 +163,26 @@ input:focus {
   margin-bottom: 0.3em;
 }
 
-#user-display p {
-  color: #555;
-  font-size: 0.9em;
+.username-placeholder {
+  font-weight: bold;
 }
 
-button {
-  background-color: #34c759;
-  color: white;
-  border: none;
-  padding: 0.7em 1.8em;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-  margin-top: 1em;
+/* DATABASE TABLE */
+.table-container {
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-button:hover {
-  background-color: #2da84f;
-  transform: scale(1.03);
-}
-
-p em {
-  color: #555;
-}
-
-/* DATABASE PLACEHOLDER*/
 table {
   width: 100%;
-  max-width: 700px;
   border-collapse: collapse;
   background: white;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   margin-top: 1em;
+  text-align: left;
 }
 
 thead {
@@ -160,6 +194,7 @@ th,
 td {
   padding: 0.8em;
   border-bottom: 1px solid #ddd;
+  font-size: 0.95em;
 }
 
 tbody tr:last-child td {
@@ -170,29 +205,50 @@ tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+/* FOOTER */
 footer {
   background-color: #0e1a2b;
   color: white;
   text-align: center;
-  padding: 0.2em 0;
+  padding: 0.6em 0;
   font-size: 0.8em;
+  width: 100%;
+  margin-top: auto; /* ✅ locks footer to bottom */
+  border-top: 1px solid #0b1524;
 }
 
-footer hr {
-  display: none;
-}
-
+/* ✅ MOBILE RESPONSIVENESS */
 @media (max-width: 600px) {
-  nav ul li {
-    margin-left: 0.8em;
+  header {
+    flex-wrap: wrap;
+    justify-content: flex-start; /* ✅ stays left-aligned */
+    padding: 0.8em 1em;
+    gap: 1em;
+  }
+
+  .logo {
+    height: 50px;
+  }
+
+  nav ul {
+    flex-wrap: wrap; /* ✅ allows wrapping, not stacking */
+    justify-content: flex-start;
+    gap: 1em;
+  }
+
+  nav ul li a {
+    font-size: 0.9em;
+  }
+
+  main {
+    padding: 1.2em;
   }
 
   form {
-    padding: 1em;
+    padding: 1.2em;
   }
 
-  input[type="text"],
-  input[type="password"] {
-    font-size: 0.9em;
+  table {
+    font-size: 0.85em;
   }
 }
