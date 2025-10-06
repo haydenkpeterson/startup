@@ -3,59 +3,57 @@
   box-sizing: border-box;
 }
 
-/* PAGE STRUCTURE */
 html, body {
-  height: 100%; /* ✅ makes flexbox layout fill the full viewport */
-}
-
-.body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* ✅ ensures footer stays pinned to bottom */
-  font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+  height: 100%;
   margin: 0;
   padding: 0;
+  font-family: "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
   background-color: #f5f7fa;
   color: #1a1a1a;
   line-height: 1.6;
-  overflow-x: hidden; /* ✅ prevents horizontal scrolling */
+}
+
+/* APP CONTAINER (full-height layout) */
+.body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;        /* fill viewport height */
+  min-width: 375px;         /* avoid layout collapse on narrow screens */
 }
 
 /* HEADER */
 header {
+  flex: 0 0 80px;           /* fixed header height */
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* ✅ keeps nav next to logo */
+  justify-content: flex-start;
   background: white;
   padding: 0.8em 1.5em;
   border-bottom: 1px solid #ddd;
   gap: 2em;
+  flex-wrap: wrap;
   width: 100%;
-  margin: 0;
-  flex-wrap: wrap; /* ✅ allows wrapping instead of stacking under logo */
 }
 
-/* LOGO */
 .logo {
   height: 60px;
   display: block;
-  flex-shrink: 0; /* ✅ prevents logo from shrinking */
+  flex-shrink: 0;
 }
 
 /* NAVIGATION */
 nav {
-  flex: 1; /* ✅ allows nav to fill remaining space beside logo */
+  flex: 1;
 }
 
 nav ul {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap; /* ✅ allows wrapping instead of dropping below */
+  flex-wrap: nowrap;
   list-style: none;
   margin: 0;
   padding: 0;
   align-items: center;
-  justify-content: flex-start;
   gap: 1.2em;
 }
 
@@ -69,66 +67,39 @@ nav ul li a {
 
 nav ul li a:hover,
 nav ul li a.active {
-  color: #34c759;
+  color: #34c759;           /* bright green hover/active color */
 }
 
 /* MAIN CONTENT */
 main {
-  flex: 1; /* ✅ expands to fill space between header & footer */
+  flex: 1 0 auto;           /* grows to fill space between header/footer */
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;  /* center content vertically if short */
+  width: 100%;
   padding: 2em 1em;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-main h2 {
-  color: #0e1a2b;
-  margin-bottom: 1em;
-}
-
-main p {
-  font-size: 1.1em;
-  margin: 0.5em 0;
-}
-
-main a {
-  color: #34c759;
-  text-decoration: none;
-}
-
-main a:hover {
-  text-decoration: underline;
-}
-
-/* LOGO INSIDE MAIN */
-.main-logo {
-  margin-top: 2em;
-  height: 100px;
-  opacity: 0.9;
+  text-align: center;
 }
 
 /* FOOTER */
 footer {
+  flex: 0 0 40px;           /* fixed footer height */
   background-color: #0e1a2b;
   color: white;
   text-align: center;
   padding: 0.6em 0;
   font-size: 0.8em;
   width: 100%;
-  margin-top: auto; /* ✅ locks footer to bottom */
   border-top: 1px solid #0b1524;
 }
 
-/* ✅ MOBILE RESPONSIVENESS */
+/* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 600px) {
   header {
     flex-wrap: wrap;
-    justify-content: flex-start; /* ✅ keeps nav beside logo */
-    padding: 0.8em 1em;
     gap: 1em;
+    padding: 0.8em 1em;
   }
 
   .logo {
@@ -137,7 +108,6 @@ footer {
 
   nav ul {
     flex-wrap: wrap;
-    justify-content: flex-start;
     gap: 1em;
   }
 
@@ -147,9 +117,21 @@ footer {
 
   main {
     padding: 1.2em;
+    justify-content: flex-start; /* less vertical centering on mobile */
   }
 
-  .main-logo {
-    height: 80px;
+  footer {
+    flex: 0 0 30px;
+  }
+}
+
+/* HANDLE VERY SHORT VIEWPORTS (hide header/footer if cramped) */
+@media (max-height: 600px) {
+  header, footer {
+    display: none;
+  }
+
+  main {
+    flex: 1 0 100vh;
   }
 }
