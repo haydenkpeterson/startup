@@ -11,7 +11,7 @@ export default function App() {
     const currentYear = new Date().getFullYear();
     return (
         <BrowserRouter>
-            <div className="app-container">
+            <div className="body">
             <header>
                 <img
                 src="audit app logo maybe.png"
@@ -27,12 +27,14 @@ export default function App() {
                 </nav>
             </header>
 
-            <Routes>
-                <Route path='/' element={<Home />} exact />
-                <Route path='/upload' element={<Upload />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='*' element={<NotFound />} />
-            </Routes>
+            <main>
+                <Routes>
+                    <Route path='/' element={<Home />} exact />
+                    <Route path='/upload' element={<Upload />} />
+                    <Route path='/login' element={<Login />} />
+                    <Route path='*' element={<NotFound />} />
+                </Routes>
+            </main>
 
             <footer>
                 <small>&copy; {currentYear} Hayden Peterson</small>

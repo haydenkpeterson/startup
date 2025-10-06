@@ -72,11 +72,11 @@ nav ul li a.active {
 
 /* MAIN CONTENT */
 main {
-  flex: 1 0 auto;           /* grows to fill space between header/footer */
+  flex: 1; /* expands fully between header and footer */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;  /* center content vertically if short */
+  justify-content: center;  /* centers content when short */
   width: 100%;
   padding: 2em 1em;
   text-align: center;
