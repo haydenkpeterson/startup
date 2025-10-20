@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const ANALYSIS_TEMPLATE = [
   { delay: 600, getMessage: (fileName) => `Uploading ${fileName}...` },
@@ -20,6 +20,14 @@ export function Upload({ userName }) {
   const [lastResult, setLastResult] = useState(null);
   const [history, setHistory] = useState(() => loadStoredHistory());
   const [showPopup, setShowPopup] = useState(false);
+  const cancelRef = useRef(false);
+  const timersRef = useRef([]);
+  const analysisAbortRef = useRef(null);
+
+  const clearTimers = useCallback(() => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem('mockAnalysisHistory', JSON.stringify(history));
@@ -30,9 +38,15 @@ export function Upload({ userName }) {
       return;
     }
 
+    cancelRef.current = false;
+    clearTimers();
+
     const score = generateAuditScore(selectedFile.name);
     const timers = ANALYSIS_TEMPLATE.map((step, index) =>
       setTimeout(() => {
+        if (cancelRef.current) {
+          return;
+        }
         const text = step.getMessage(selectedFile.name, score);
         setMessages((prev) => [...prev, { id: `${analysisRunId}-${index}`, text }]);
         setActiveMessage(text);
@@ -56,12 +70,23 @@ export function Upload({ userName }) {
           });
           setHistory((prev) => [historyEntry, ...prev]);
           setShowPopup(true);
+          analysisAbortRef.current = null;
         }
       }, step.delay)
     );
+    timersRef.current = timers;
 
-    return () => timers.forEach(clearTimeout);
-  }, [analysisStatus, analysisRunId, selectedFile, userName]);
+    return () => {
+      timers.forEach(clearTimeout);
+      if (timersRef.current === timers) {
+        timersRef.current = [];
+      }
+      if (analysisAbortRef.current) {
+        analysisAbortRef.current.abort();
+        analysisAbortRef.current = null;
+      }
+    };
+  }, [analysisStatus, analysisRunId, selectedFile, userName, clearTimers]);
 
   useEffect(() => {
     if (analysisStatus === 'idle') {
@@ -71,11 +96,22 @@ export function Upload({ userName }) {
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
+    cancelRef.current = true;
+    clearTimers();
+    if (analysisAbortRef.current) {
+      analysisAbortRef.current.abort();
+      analysisAbortRef.current = null;
+    }
+    if (analysisAbortRef.current) {
+      analysisAbortRef.current.abort();
+      analysisAbortRef.current = null;
+    }
     setSelectedFile(file);
     setLastResult(null);
     setMessages([]);
     setActiveMessage('');
     setShowPopup(false);
+    setAnalysisRunId(null);
     setAnalysisStatus(file ? 'ready' : 'idle');
   };
 
@@ -84,6 +120,13 @@ export function Upload({ userName }) {
     if (!selectedFile) {
       return;
     }
+    cancelRef.current = false;
+    clearTimers();
+    setLastResult(null);
+    if (analysisAbortRef.current) {
+      analysisAbortRef.current.abort();
+    }
+    analysisAbortRef.current = new AbortController();
     const runId = Date.now().toString();
     setAnalysisRunId(runId);
     const intro = `Preparing to analyze ${selectedFile.name}...`;
@@ -91,6 +134,21 @@ export function Upload({ userName }) {
     setActiveMessage(intro);
     setAnalysisStatus('processing');
     setShowPopup(true);
+  };
+
+  const handleCancel = () => {
+    if (analysisStatus !== 'processing') {
+      setShowPopup(false);
+      return;
+    }
+    cancelRef.current = true;
+    clearTimers();
+    setMessages([]);
+    setActiveMessage('');
+    setShowPopup(false);
+    setAnalysisRunId(null);
+    setLastResult(null);
+    setAnalysisStatus(selectedFile ? 'ready' : 'idle');
   };
 
   const disabled = analysisStatus === 'processing' || !selectedFile;
@@ -158,7 +216,7 @@ export function Upload({ userName }) {
           message={activeMessage}
           progress={progressPercent}
           isComplete={analysisStatus === 'complete'}
-          onClose={() => setShowPopup(false)}
+          onClose={handleCancel}
         />
       )}
     </main>
