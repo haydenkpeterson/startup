@@ -16,6 +16,7 @@ I refreshed my memory of Git commands and their purposes. I also refamiliarized 
 
 My IP address is: 18.211.42.4
 in order to ssh and use my key use ~/.ssh/production.pem
+to deploy to my server use ./deployReact.sh -k ~/.ssh/production.pem -h auditapp.click -s startup
 
 
 ## Caddy
@@ -36,26 +37,4 @@ Had to update class to className in my html. React components were easy to figur
 
 ## React Part 2: Reactivity
 
-This was a lot of fun to see it all come together. I had to keep remembering to use React state instead of just manipulating the DOM directly.
-
-Handling the toggling of the checkboxes was particularly interesting.
-
-```jsx
-<div className="input-group sound-button-container">
-  {calmSoundTypes.map((sound, index) => (
-    <div key={index} className="form-check form-switch">
-      <input
-        className="form-check-input"
-        type="checkbox"
-        value={sound}
-        id={sound}
-        onChange={() => togglePlay(sound)}
-        checked={selectedSounds.includes(sound)}
-      ></input>
-      <label className="form-check-label" htmlFor={sound}>
-        {sound}
-      </label>
-    </div>
-  ))}
-</div>
-```
+I'm excited to actually implement these technologies that will help my startup actually work well. It was fun to make a popup that does the websocket messages.

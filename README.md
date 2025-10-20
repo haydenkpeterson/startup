@@ -98,7 +98,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **All functionality implemented or mocked out** - I implemented all fucntionality and mocked out my other functionality like websocket and database access.
-- [x] **Hooks** - Used useState and useEffect to implement functionality and make a framework for providing functionality in the future.
+- [x] **Hooks** - Used useState and useEffect to implement functionality and make a framework for providing functionality in the future. Created a popup to do websocket messages while backend analyzes the file.
 
 ## 🚀 Service deliverable
 
