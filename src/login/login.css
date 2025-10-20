@@ -56,7 +56,7 @@ nav ul {
 }
 
 nav ul li a {
-  color: #0e1a2b;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
@@ -82,7 +82,7 @@ main {
 }
 
 main h2 {
-  color: #0e1a2b;
+  color: #000000;
   margin-bottom: 1em;
 }
 
@@ -141,11 +141,11 @@ button:hover {
 }
 
 .create-account {
-  background-color: #0e1a2b;
+  background-color: #000000;
 }
 
 .create-account:hover {
-  background-color: #162b46;
+  background-color: #25412f;
 }
 
 /* USER DISPLAY PLACEHOLDER */
@@ -173,6 +173,13 @@ button:hover {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+.table-container--scroll {
+  max-height: 220px;
+  overflow-y: auto;
+}
+.table-container--scroll table {
+  margin: 0;
+}
 
 table {
   width: 100%;
@@ -186,7 +193,7 @@ table {
 }
 
 thead {
-  background-color: #0e1a2b;
+  background-color: #000000;
   color: white;
 }
 
@@ -202,19 +209,19 @@ tbody tr:last-child td {
 }
 
 tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f3f7f4;
 }
 
 /* FOOTER */
 footer {
-  background-color: #0e1a2b;
+  background-color: #000000;
   color: white;
   text-align: center;
   padding: 0.6em 0;
   font-size: 0.8em;
   width: 100%;
   margin-top: auto; /* ✅ locks footer to bottom */
-  border-top: 1px solid #0b1524;
+  border-top: 1px solid #000000;
 }
 
 /* ✅ MOBILE RESPONSIVENESS */
@@ -252,3 +259,7 @@ footer {
     font-size: 0.85em;
   }
 }
+
+
+
+

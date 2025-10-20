@@ -65,7 +65,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
 
           <section className="database-placeholder">
             <h2>Uploaded Files</h2>
-            <div className="table-container">
+            <div className="table-container table-container--scroll">
               <table>
                 <thead>
                   <tr>

@@ -60,7 +60,7 @@ nav ul {
 }
 
 nav ul li a {
-  color: #0e1a2b;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
@@ -86,7 +86,7 @@ main {
 }
 
 main h2 {
-  color: #0e1a2b;
+  color: #000000;
   font-size: 1.2em;
   margin: 0.6em 0;
 }
@@ -159,14 +159,14 @@ p em {
 
 /* FOOTER */
 footer {
-  background-color: #0e1a2b;
+  background-color: #000000;
   color: white;
   text-align: center;
   padding: 0.6em 0;
   font-size: 0.8em;
   width: 100%;
   margin-top: auto; /* ✅ locks footer to bottom */
-  border-top: 1px solid #0b1524;
+  border-top: 1px solid #000000;
 }
 
 /* MOBILE */
@@ -205,3 +205,5 @@ footer {
     padding: 0.2em 0.6em;
   }
 }
+
+

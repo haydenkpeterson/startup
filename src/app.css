@@ -58,7 +58,7 @@ nav ul {
 }
 
 .nav-link {
-  color: #0e1a2b !important;
+  color: #000000 !important;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
@@ -70,7 +70,7 @@ nav ul {
 }
 
 .nav-link.active {
-  color: #0e1a2b !important;
+  color: #000000 !important;
 }
 
 .realtime-popup {
@@ -154,7 +154,7 @@ nav ul {
 }
 
 .realtime-popup__message--complete {
-  color: #0e1a2b;
+  color: #000000;
 }
 
 .table-container--scroll {
@@ -164,7 +164,30 @@ nav ul {
 }
 
 .table-container--scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
   margin: 0;
+  box-shadow: 0 12px 30px rgba(31, 49, 36, 0.12);
+}
+
+.table-container--scroll thead {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.table-container--scroll th,
+.table-container--scroll td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e3e9e5;
+  font-size: 0.95rem;
+}
+
+.table-container--scroll tbody tr:nth-child(even) {
+  background-color: #f3f7f4;
 }
 
 /* MAIN CONTENT */
@@ -182,13 +205,13 @@ main {
 /* FOOTER */
 footer {
   flex: 0 0 40px;           /* fixed footer height */
-  background-color: #0e1a2b;
+  background-color: #000000;
   color: white;
   text-align: center;
   padding: 0.6em 0;
   font-size: 0.8em;
   width: 100%;
-  border-top: 1px solid #0b1524;
+  border-top: 1px solid #000000;
 }
 
 /* RESPONSIVE ADJUSTMENTS */
@@ -244,3 +267,4 @@ footer {
     flex: 1 0 100vh;
   }
 }
+
