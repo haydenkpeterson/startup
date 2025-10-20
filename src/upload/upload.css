@@ -103,19 +103,49 @@ form {
   margin-bottom: 1em;
 }
 
-input[type="file"] {
-  width: 100%;
-  padding: 0.4em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9em;
-  background: #fff;
-  margin-bottom: 0.8em;
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin-bottom: 1em;
 }
 
-input:focus {
-  border-color: #34c759;
-  outline: none;
+.file-picker__trigger {
+  background: linear-gradient(135deg, #34c759 0%, #2da84f 100%);
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.55em 1.4em;
+  width: auto;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.file-picker__trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(45, 168, 79, 0.28);
+}
+
+.file-picker__trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.file-picker__name {
+  flex: 1;
+  font-size: 0.9em;
+  color: #1a1a1a;
+  text-align: right;
+  word-break: break-word;
+  opacity: 0.85;
+}
+
+.file-picker__input {
+  display: none;
 }
 
 /* BUTTON */
@@ -205,5 +235,6 @@ footer {
     padding: 0.2em 0.6em;
   }
 }
+
 
 

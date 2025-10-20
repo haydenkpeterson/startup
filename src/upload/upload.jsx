@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const ANALYSIS_TEMPLATE = [
   { delay: 600, getMessage: (fileName) => `Uploading ${fileName}...` },
@@ -23,6 +23,7 @@ export function Upload({ userName }) {
   const cancelRef = useRef(false);
   const timersRef = useRef([]);
   const analysisAbortRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach(clearTimeout);
@@ -153,6 +154,18 @@ export function Upload({ userName }) {
 
   const disabled = analysisStatus === 'processing' || !selectedFile;
 
+  const handleFileTriggerClick = () => {
+    if (analysisStatus === 'processing') {
+      return;
+    }
+    fileInputRef.current?.click();
+  };
+
+  const filteredHistory = useMemo(() => {
+    const key = userName || 'guest';
+    return history.filter((entry) => entry.user === key);
+  }, [history, userName]);
+
   const totalEvents = ANALYSIS_TEMPLATE.length + 1;
   const emittedEvents = messages.length;
   const progressPercent =
@@ -164,15 +177,31 @@ export function Upload({ userName }) {
       <p>Submit your files for AI-powered auditing and analysis.</p>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <label htmlFor="file"><strong>Select a file:</strong></label>
-        <input
-          type="file"
-          id="file"
-          name="file"
-          required
-          onChange={handleFileChange}
-          disabled={analysisStatus === 'processing'}
-        />
+        <div className="file-picker">
+          <button
+            type="button"
+            className="file-picker__trigger"
+            onClick={handleFileTriggerClick}
+            disabled={analysisStatus === 'processing'}
+          >
+            Choose File
+          </button>
+          <span className="file-picker__name" aria-live="polite">
+            {selectedFile ? selectedFile.name : 'No file selected'}
+          </span>
+          <input
+            ref={fileInputRef}
+            className="file-picker__input"
+            type="file"
+            id="file-input"
+            name="file"
+            required
+            onChange={handleFileChange}
+            disabled={analysisStatus === 'processing'}
+            hidden
+            style={{ display: 'none' }}
+          />
+        </div>
         <button type="submit" disabled={disabled}>
           {analysisStatus === 'processing' ? 'Analyzing...' : 'Process with AI'}
         </button>
@@ -191,7 +220,7 @@ export function Upload({ userName }) {
               </tr>
             </thead>
             <tbody>
-              {history.map((row, index) => (
+              {filteredHistory.map((row, index) => (
                 <tr key={`${row.user}-${row.filename}-${index}`}>
                   <td>{row.user}</td>
                   <td>{row.filename}</td>
@@ -199,10 +228,10 @@ export function Upload({ userName }) {
                   <td>{row.date}</td>
                 </tr>
               ))}
-              {history.length === 0 && (
+              {filteredHistory.length === 0 && (
                 <tr>
                   <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                    Upload a file to see your audit scores here.
+                    Upload a file to see your AuditApp scores here.
                   </td>
                 </tr>
               )}

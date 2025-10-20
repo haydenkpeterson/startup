@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './login.css';
 
 const AUTH_STATES = {
@@ -44,6 +44,10 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
   };
 
   const isAuthenticated = authState === AUTH_STATES.AUTHENTICATED;
+  const filteredHistory = useMemo(() => {
+    const key = userName || 'guest';
+    return history.filter((entry) => entry.user === key);
+  }, [history, userName]);
 
   return (
     <main>
@@ -76,7 +80,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((row, index) => (
+                  {filteredHistory.map((row, index) => (
                     <tr key={`${row.user}-${row.filename}-${index}`}>
                       <td>{row.user}</td>
                       <td>{row.filename}</td>
@@ -84,10 +88,10 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
                       <td>{row.date}</td>
                     </tr>
                   ))}
-                  {history.length === 0 && (
+                  {filteredHistory.length === 0 && (
                     <tr>
                       <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                        Uploads will appear here as soon as AuditApp processes them.
+                        No uploads for this account yet. Try submitting a file from the Upload page.
                       </td>
                     </tr>
                   )}
