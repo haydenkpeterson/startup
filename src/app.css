@@ -57,17 +57,105 @@ nav ul {
   gap: 1.2em;
 }
 
-nav ul li a {
-  color: #0e1a2b;
+.nav-link {
+  color: #0e1a2b !important;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
   white-space: nowrap;
 }
 
-nav ul li a:hover,
-nav ul li a.active {
-  color: #34c759;           /* bright green hover/active color */
+.nav-link:hover {
+  color: #34c759 !important;           /* bright green hover/active color */
+}
+
+.nav-link.active {
+  color: #0e1a2b !important;
+}
+
+.realtime-popup {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background: rgba(14, 26, 43, 0.08);
+  backdrop-filter: blur(4px);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 30px rgba(14, 26, 43, 0.2);
+  padding: 0.25rem;
+}
+
+.realtime-popup__content {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  width: 360px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.realtime-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: #34c759;
+  color: #0e1a2b;
+}
+
+.realtime-popup__header h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.realtime-popup__header button {
+  border: none;
+  background: transparent;
+  color: #0e1a2b;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.realtime-popup__body {
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.realtime-popup__body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 1.05rem;
+  text-align: center;
+  width: 100%;
+}
+
+.analysis-summary {
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.realtime-popup__progress {
+  width: 100%;
+  height: 6px;
+  background-color: #e6f5ea;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.realtime-popup__progress-bar {
+  height: 100%;
+  background-color: #34c759;
+  transition: width 0.3s ease;
 }
 
 /* MAIN CONTENT */
@@ -118,6 +206,18 @@ footer {
   main {
     padding: 1.2em;
     justify-content: flex-start; /* less vertical centering on mobile */
+  }
+
+  .realtime-popup {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 1rem;
+  }
+
+  .realtime-popup__content {
+    width: 100%;
+    max-width: none;
   }
 
   footer {
