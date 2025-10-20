@@ -31,7 +31,6 @@ export function Upload({ userName }) {
     }
 
     const score = generateAuditScore(selectedFile.name);
-    const summaryText = `AuditApp assigned a ${score}/100 confidence score to ${selectedFile.name}.`;
     const timers = ANALYSIS_TEMPLATE.map((step, index) =>
       setTimeout(() => {
         const text = step.getMessage(selectedFile.name, score);
@@ -53,7 +52,6 @@ export function Upload({ userName }) {
           setLastResult({
             fileName: selectedFile.name,
             score,
-            summary: summaryText,
             generatedAt: new Date(),
           });
           setHistory((prev) => [historyEntry, ...prev]);
@@ -158,9 +156,8 @@ export function Upload({ userName }) {
       {showPopup && (
         <RealtimePopup
           message={activeMessage}
-          status={analysisStatus}
-          summary={lastResult?.summary}
           progress={progressPercent}
+          isComplete={analysisStatus === 'complete'}
           onClose={() => setShowPopup(false)}
         />
       )}
@@ -168,7 +165,7 @@ export function Upload({ userName }) {
   );
 }
 
-function RealtimePopup({ message, status, summary, progress, onClose }) {
+function RealtimePopup({ message, progress, isComplete, onClose }) {
   return (
     <div className="realtime-popup" role="dialog" aria-modal="true">
       <div className="realtime-popup__content">
@@ -186,8 +183,9 @@ function RealtimePopup({ message, status, summary, progress, onClose }) {
               aria-hidden="true"
             />
           </div>
-          <div className="realtime-popup__message">{message}</div>
-          {status === 'complete' && summary && <p className="analysis-summary">{summary}</p>}
+          <div className={`realtime-popup__message${isComplete ? ' realtime-popup__message--complete' : ''}`}>
+            {message}
+          </div>
         </div>
       </div>
     </div>
