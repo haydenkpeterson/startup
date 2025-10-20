@@ -15,6 +15,7 @@ export function Upload({ userName }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [analysisStatus, setAnalysisStatus] = useState('idle');
   const [messages, setMessages] = useState([]);
+  const [activeMessage, setActiveMessage] = useState('');
   const [analysisRunId, setAnalysisRunId] = useState(null);
   const [lastResult, setLastResult] = useState(null);
   const [history, setHistory] = useState(() => loadStoredHistory());
@@ -35,6 +36,7 @@ export function Upload({ userName }) {
       setTimeout(() => {
         const text = step.getMessage(selectedFile.name, score);
         setMessages((prev) => [...prev, { id: `${analysisRunId}-${index}`, text }]);
+        setActiveMessage(text);
         if (step.finalize) {
           setAnalysisStatus('complete');
           const entryDate = new Date().toLocaleString('en-US', {
@@ -74,6 +76,7 @@ export function Upload({ userName }) {
     setSelectedFile(file);
     setLastResult(null);
     setMessages([]);
+    setActiveMessage('');
     setShowPopup(false);
     setAnalysisStatus(file ? 'ready' : 'idle');
   };
@@ -85,7 +88,9 @@ export function Upload({ userName }) {
     }
     const runId = Date.now().toString();
     setAnalysisRunId(runId);
-    setMessages([{ id: `${runId}-start`, text: `Preparing to analyze ${selectedFile.name}...` }]);
+    const intro = `Preparing to analyze ${selectedFile.name}...`;
+    setMessages([{ id: `${runId}-start`, text: intro }]);
+    setActiveMessage(intro);
     setAnalysisStatus('processing');
     setShowPopup(true);
   };
@@ -93,8 +98,9 @@ export function Upload({ userName }) {
   const disabled = analysisStatus === 'processing' || !selectedFile;
 
   const totalEvents = ANALYSIS_TEMPLATE.length + 1;
+  const emittedEvents = messages.length;
   const progressPercent =
-    totalEvents > 0 ? Math.min(100, Math.round((messages.length / totalEvents) * 100)) : 0;
+    totalEvents > 0 ? Math.min(100, Math.round((emittedEvents / totalEvents) * 100)) : 0;
 
   return (
     <main>
@@ -118,7 +124,7 @@ export function Upload({ userName }) {
 
       <section>
         <h2>Recent Audit Scores</h2>
-        <div className="table-container">
+        <div className="table-container table-container--scroll">
           <table>
             <thead>
               <tr>
@@ -151,7 +157,7 @@ export function Upload({ userName }) {
 
       {showPopup && (
         <RealtimePopup
-          messages={messages}
+          message={activeMessage}
           status={analysisStatus}
           summary={lastResult?.summary}
           progress={progressPercent}
@@ -162,7 +168,7 @@ export function Upload({ userName }) {
   );
 }
 
-function RealtimePopup({ messages, status, summary, progress, onClose }) {
+function RealtimePopup({ message, status, summary, progress, onClose }) {
   return (
     <div className="realtime-popup" role="dialog" aria-modal="true">
       <div className="realtime-popup__content">
@@ -180,11 +186,7 @@ function RealtimePopup({ messages, status, summary, progress, onClose }) {
               aria-hidden="true"
             />
           </div>
-          <ul>
-            {messages.map((message) => (
-              <li key={message.id}>{message.text}</li>
-            ))}
-          </ul>
+          <div className="realtime-popup__message">{message}</div>
           {status === 'complete' && summary && <p className="analysis-summary">{summary}</p>}
         </div>
       </div>
