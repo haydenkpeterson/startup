@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { loadHistory } from '../common/mockHistory';
 import './login.css';
 
 const AUTH_STATES = {
@@ -10,20 +11,20 @@ const AUTH_STATES = {
 export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange }) {
   const [formUserName, setFormUserName] = useState(userName ?? '');
   const [password, setPassword] = useState('');
-  const [history, setHistory] = useState(() => loadStoredHistory());
+  const [history, setHistory] = useState(() => loadHistory());
 
   useEffect(() => {
     setFormUserName(userName ?? '');
   }, [userName]);
 
   useEffect(() => {
-    setHistory(loadStoredHistory());
+    setHistory(loadHistory());
   }, [authState]);
 
   useEffect(() => {
     const handleStorage = (event) => {
       if (event.key === 'mockAnalysisHistory') {
-        setHistory(loadStoredHistory());
+        setHistory(loadHistory());
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -146,17 +147,4 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
       )}
     </main>
   );
-}
-
-function loadStoredHistory() {
-  try {
-    const stored = window.localStorage.getItem('mockAnalysisHistory');
-    const parsed = stored ? JSON.parse(stored) : null;
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-  } catch (error) {
-    console.warn('Unable to parse stored mock history', error);
-  }
-  return [];
 }

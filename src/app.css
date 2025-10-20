@@ -157,6 +157,24 @@ nav ul {
   color: #000000;
 }
 
+.realtime-popup__dismiss {
+  margin-top: 1.25rem;
+  align-self: center;
+  background-color: #34c759;
+  border: none;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.5em 1.6em;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.realtime-popup__dismiss:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(45, 168, 79, 0.28);
+}
+
 .table-container--scroll {
   max-height: 220px;
   overflow-y: auto;
