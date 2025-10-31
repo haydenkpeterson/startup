@@ -1,0 +1,5 @@
+# Ignore the database configuration file
+dbConfig.json
+
+# Dependency folder
+node_modules/
