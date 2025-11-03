@@ -5,7 +5,7 @@ export function RealtimePopup({ message, progress, isComplete, onClose }) {
     <div className="realtime-popup" role="dialog" aria-modal="true">
       <div className="realtime-popup__content">
         <header className="realtime-popup__header">
-          <h3>Realtime Analysis</h3>
+          <h3>Realtime Audit</h3>
         </header>
         <div className="realtime-popup__body">
           <div className="realtime-popup__progress">

@@ -17,6 +17,10 @@ const authCookieName = 'token';
 
 const users = [];
 const audits = [];
+const auditUsage = new Map();
+
+const AUDIT_LIMIT = Number(process.env.AUDIT_LIMIT ?? 3);
+const AUDIT_WINDOW_MS = Number(process.env.AUDIT_WINDOW_MS ?? 15 * 60 * 1000);
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
 const openaiClient = openaiApiKey ? new OpenAI({ apiKey: openaiApiKey }) : null;
@@ -117,8 +121,16 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
   }
 
   try {
+    const now = Date.now();
+    const usage = auditUsage.get(req.user.username) || [];
+    const recentUsage = usage.filter((timestamp) => now - timestamp < AUDIT_WINDOW_MS);
+    if (recentUsage.length >= AUDIT_LIMIT) {
+      res.status(429).send({ msg: 'Audit limit reached. Please try again later.' });
+      return;
+    }
+
     const { text } = await pdfParse(req.file.buffer);
-    const trimmed = text.length > 6000 ? `${text.slice(0, 6000)}...` : text;
+    const trimmed = text.length > 4000 ? `${text.slice(0, 4000)}...` : text;
 
     const completion = await openaiClient.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -133,7 +145,7 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
           content: `Audit the following PDF content:\n\n${trimmed}`,
         },
       ],
-      max_tokens: 400,
+      max_tokens: 200,
       temperature: 0.2,
     });
 
@@ -148,6 +160,7 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
     };
 
     audits.push(auditRecord);
+    auditUsage.set(req.user.username, [...recentUsage, now]);
     res.send(auditRecord);
   } catch (err) {
     console.error('Audit error', err);

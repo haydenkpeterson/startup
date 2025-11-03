@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { loadHistory } from '../common/mockHistory';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ApiError, createAccount, fetchAuditHistory, login, logout } from '../common/apiClient';
 import './login.css';
 
 const AUTH_STATES = {
@@ -11,44 +11,104 @@ const AUTH_STATES = {
 export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange }) {
   const [formUserName, setFormUserName] = useState(userName ?? '');
   const [password, setPassword] = useState('');
-  const [history, setHistory] = useState(() => loadHistory());
+  const [history, setHistory] = useState([]);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setFormUserName(userName ?? '');
   }, [userName]);
 
-  useEffect(() => {
-    setHistory(loadHistory());
-  }, [authState]);
-
-  useEffect(() => {
-    const handleStorage = (event) => {
-      if (event.key === 'mockAnalysisHistory') {
-        setHistory(loadHistory());
+  const loadAuditHistory = useCallback(async () => {
+    try {
+      const records = await fetchAuditHistory();
+      setHistory(Array.isArray(records) ? records : []);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setHistory([]);
+      } else {
+        console.error('Failed to load audit history', err);
       }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    }
   }, []);
 
-  const handleAuthenticate = (nextUserName) => {
-    const trimmedName = nextUserName.trim();
-    if (!trimmedName) {
+  useEffect(() => {
+    if (authState === AUTH_STATES.AUTHENTICATED) {
+      loadAuditHistory();
+    } else {
+      setHistory([]);
+    }
+  }, [authState, loadAuditHistory]);
+
+  const handleAuthentication = async (action) => {
+    const trimmedName = formUserName.trim();
+    if (!trimmedName || !password) {
       return;
     }
-    onAuthChange?.(trimmedName, AUTH_STATES.AUTHENTICATED);
-    setPassword('');
+
+    setIsSubmitting(true);
+    setStatusMessage('');
+
+    try {
+      const response =
+        action === 'create'
+          ? await createAccount(trimmedName, password)
+          : await login(trimmedName, password);
+
+      onAuthChange?.(response?.username ?? trimmedName, AUTH_STATES.AUTHENTICATED);
+      setPassword('');
+      setStatusMessage(
+        action === 'create' ? 'Account created successfully.' : 'Login successful.'
+      );
+      await loadAuditHistory();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setStatusMessage(err.message);
+      } else {
+        console.error('Authentication failed', err);
+        setStatusMessage('Authentication failed. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleLogout = () => {
-    onAuthChange?.('', AUTH_STATES.UNAUTHENTICATED);
+  const handleLogout = async () => {
+    setIsSubmitting(true);
+    setStatusMessage('');
+    try {
+      await logout();
+    } catch (err) {
+      console.error('Logout failed', err);
+    } finally {
+      setIsSubmitting(false);
+      onAuthChange?.('', AUTH_STATES.UNAUTHENTICATED);
+      setHistory([]);
+      setPassword('');
+    }
   };
 
   const isAuthenticated = authState === AUTH_STATES.AUTHENTICATED;
   const filteredHistory = useMemo(() => {
-    const key = userName || 'guest';
-    return history.filter((entry) => entry.user === key);
-  }, [history, userName]);
+    return (history ?? []).map((entry) => ({
+      ...entry,
+      displayDate: entry?.createdAt
+        ? new Date(entry.createdAt).toLocaleString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+        : 'Unknown',
+      bulletPoints: entry?.summary
+        ? entry.summary
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+        : [],
+    }));
+  }, [history]);
 
   return (
     <main>
@@ -62,8 +122,8 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               </span>
               !
             </h2>
-            <p>Thanks for creating an account. Your personalized dashboard will appear here once the backend is connected.</p>
-            <button type="button" onClick={handleLogout}>
+            <p>You are connected to the live AuditApp service. Manage recent audits below.</p>
+            <button type="button" onClick={handleLogout} disabled={isSubmitting}>
               Logout
             </button>
           </section>
@@ -74,24 +134,32 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               <table>
                 <thead>
                   <tr>
-                    <th>User</th>
                     <th>Filename</th>
-                    <th>Score</th>
+                    <th>Summary</th>
                     <th>Date Uploaded</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredHistory.map((row, index) => (
-                    <tr key={`${row.user}-${row.filename}-${index}`}>
-                      <td>{row.user}</td>
+                    <tr key={`${row.id}-${index}`}>
                       <td>{row.filename}</td>
-                      <td>{row.score}</td>
-                      <td>{row.date}</td>
+                      <td>
+                        <ul className="mb-0">
+                          {row.bulletPoints.length > 0 ? (
+                            row.bulletPoints.map((line, pointIndex) => (
+                              <li key={`${row.id}-summary-${pointIndex}`}>{line}</li>
+                            ))
+                          ) : (
+                            <li>No summary available.</li>
+                          )}
+                        </ul>
+                      </td>
+                      <td>{row.displayDate}</td>
                     </tr>
                   ))}
                   {filteredHistory.length === 0 && (
                     <tr>
-                      <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                      <td colSpan="3" style={{ textAlign: 'center', fontStyle: 'italic' }}>
                         No uploads for this account yet. Try submitting a file from the Upload page.
                       </td>
                     </tr>
@@ -104,10 +172,15 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
       ) : (
         <section className="login-section">
           <h2>Access AuditApp</h2>
+          {statusMessage && (
+            <div role="status" className="auth-feedback">
+              {statusMessage}
+            </div>
+          )}
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              handleAuthenticate(formUserName);
+              handleAuthentication('login');
             }}
           >
             <label htmlFor="username">Username:</label>
@@ -118,6 +191,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               required
               value={formUserName}
               onChange={(event) => setFormUserName(event.target.value)}
+              disabled={isSubmitting}
             />
 
             <label htmlFor="password">Password:</label>
@@ -128,21 +202,22 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              disabled={isSubmitting}
             />
 
-            <button type="submit" disabled={!formUserName || !password}>
-              Login
+            <button type="submit" disabled={!formUserName || !password || isSubmitting}>
+              {isSubmitting ? 'Working...' : 'Login'}
             </button>
             <button
               type="button"
               className="create-account"
-              onClick={() => handleAuthenticate(formUserName)}
-              disabled={!formUserName || !password}
+              onClick={() => handleAuthentication('create')}
+              disabled={!formUserName || !password || isSubmitting}
             >
-              Create an Account
+              {isSubmitting ? 'Working...' : 'Create an Account'}
             </button>
           </form>
-          <p><em>(Note: Authentication is mocked for now.)</em></p>
+          <p><em>Password authentication is backed by the Node.js service.</em></p>
         </section>
       )}
     </main>

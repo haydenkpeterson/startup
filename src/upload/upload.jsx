@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMockAnalysis } from '../common/useMockAnalysis';
+import { useAuditService } from '../common/useAuditService';
 import { RealtimePopup } from './components/realtimePopup';
 
 export function Upload({ userName }) {
@@ -10,12 +10,14 @@ export function Upload({ userName }) {
     progressPercent,
     showPopup,
     filteredHistory,
+    analysisResult,
+    error,
     handleFileChange,
     handleSubmit,
     handleCancel,
     handleFileTriggerClick,
     fileInputRef,
-  } = useMockAnalysis(userName);
+  } = useAuditService(userName);
 
   const disabled = analysisStatus === 'processing' || !selectedFile;
 
@@ -23,6 +25,12 @@ export function Upload({ userName }) {
     <main>
       <h2>Upload Your Financial Files</h2>
       <p>Submit your files for AI-powered auditing and analysis.</p>
+
+      {error && (
+        <div role="alert" className="alert alert-danger">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="file-picker">
@@ -54,31 +62,60 @@ export function Upload({ userName }) {
         </button>
       </form>
 
+      {analysisResult && (
+        <section className="mt-4">
+          <h2>Latest Audit Findings</h2>
+          <p>
+            <strong>File:</strong> {analysisResult.filename}
+          </p>
+          <p>
+            <strong>Generated:</strong> {new Date(analysisResult.createdAt).toLocaleString()}
+          </p>
+          <ul>
+            {analysisResult.summary
+              .split('\n')
+              .map((line) => line.trim())
+              .filter(Boolean)
+              .map((line, index) => (
+                <li key={`${analysisResult.id}-summary-${index}`}>{line}</li>
+              ))}
+          </ul>
+        </section>
+      )}
+
       <section>
-        <h2>Recent Audit Scores</h2>
+        <h2>Recent Audits</h2>
         <div className="table-container table-container--scroll">
           <table>
             <thead>
               <tr>
-                <th>User</th>
                 <th>Filename</th>
-                <th>Score</th>
+                <th>Summary</th>
                 <th>Date Analyzed</th>
               </tr>
             </thead>
             <tbody>
               {filteredHistory.map((row, index) => (
-                <tr key={`${row.user}-${row.filename}-${index}`}>
-                  <td>{row.user}</td>
+                <tr key={`${row.id}-${index}`}>
                   <td>{row.filename}</td>
-                  <td>{row.score}</td>
-                  <td>{row.date}</td>
+                  <td>
+                    <ul className="mb-0">
+                      {row.bulletPoints.length > 0 ? (
+                        row.bulletPoints.map((point, bulletIndex) => (
+                          <li key={`${row.id}-point-${bulletIndex}`}>{point}</li>
+                        ))
+                      ) : (
+                        <li>No summary available.</li>
+                      )}
+                    </ul>
+                  </td>
+                  <td>{row.displayDate}</td>
                 </tr>
               ))}
               {filteredHistory.length === 0 && (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                    Upload a file to see your AuditApp scores here.
+                  <td colSpan="3" style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                    Upload a file to see your AuditApp audits here.
                   </td>
                 </tr>
               )}

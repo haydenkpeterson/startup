@@ -103,6 +103,43 @@ form {
   margin-bottom: 1em;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 1.5em;
+  text-align: left;
+}
+
+thead {
+  background-color: #000000;
+  color: white;
+}
+
+th,
+td {
+  padding: 0.8em;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95em;
+  vertical-align: top;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f3f7f4;
+}
+
+table ul {
+  padding-left: 1.2em;
+  margin-bottom: 0;
+}
+
 .file-picker {
   display: flex;
   align-items: center;

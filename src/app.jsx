@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
@@ -6,6 +6,7 @@ import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Login } from './login/login';
 import { Home } from './home/home';
 import { Upload } from './upload/upload';
+import { ApiError, fetchProfile } from './common/apiClient';
 
 const AUTH_STATES = {
     UNKNOWN: 'unknown',
@@ -18,6 +19,28 @@ export default function App() {
     const [authState, setAuthState] = useState(AUTH_STATES.UNKNOWN);
     const [userName, setUserName] = useState('');
 
+    const syncSession = useCallback(async () => {
+        try {
+            const profile = await fetchProfile();
+            if (profile?.username) {
+                setUserName(profile.username);
+                setAuthState(AUTH_STATES.AUTHENTICATED);
+                window.localStorage.setItem('userName', profile.username);
+                return;
+            }
+        } catch (err) {
+            if (err instanceof ApiError && err.status === 401) {
+                // Session not authenticated
+            } else {
+                console.error('Unable to verify session', err);
+            }
+        }
+
+        setUserName('');
+        setAuthState(AUTH_STATES.UNAUTHENTICATED);
+        window.localStorage.removeItem('userName');
+    }, []);
+
     useEffect(() => {
         const storedUserName = window.localStorage.getItem('userName');
         if (storedUserName) {
@@ -26,7 +49,9 @@ export default function App() {
         } else {
             setAuthState(AUTH_STATES.UNAUTHENTICATED);
         }
-    }, []);
+
+        syncSession();
+    }, [syncSession]);
 
     const handleAuthChange = (nextUserName, nextAuthState) => {
         setUserName(nextUserName ?? '');
