@@ -3,3 +3,6 @@ dbConfig.json
 
 # Dependency folder
 node_modules/
+
+# Ignore .env
+.env
