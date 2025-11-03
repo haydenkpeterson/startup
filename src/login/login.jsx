@@ -217,7 +217,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
         </>
       ) : (
         <section className="login-section">
-          <h2>{isSignup ? 'Create Your AuditApp Account' : 'Access AuditApp'}</h2>
+          <h2>{isSignup ? 'Create an Account' : 'Login'}</h2>
           {statusMessage && (
             <div role="status" className="auth-feedback">
               {statusMessage}
