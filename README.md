@@ -106,7 +106,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 - [x] **Node.js/Express HTTP service** - built service/index.js as a full express HTTP service for auth, uploading, login, etc.
 - [x] **Static middleware for frontend** - static middleware efficiently handles files, and uses API behavior.
-- [x] **Calls to third party endpoints** - calls OpenAI API for basic analysis
+- [x] **Calls to third party endpoints** - calls OpenAI API for basic analysis. This is on the backend not the frontend but I have TA approval.
 - [x] **Backend service endpoints** - multiple backend endpoints that handle registration, sign in and out, profile access, pdf upload, and retrieval of audit history.
 - [x] **Frontend calls service endpoints** - replaced mock login/upload with real service flows.
 - [x] **Supports registration, login, logout, and restricted endpoint** - /api/auth/create, /api/auth/login, and /api/auth/logout, with verifyAuth protecting /api/profile.
