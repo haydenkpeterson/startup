@@ -145,7 +145,7 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
           content: `Audit the following PDF content:\n\n${trimmed}`,
         },
       ],
-      max_tokens: 200,
+      max_tokens: 400,
       temperature: 0.2,
     });
 
