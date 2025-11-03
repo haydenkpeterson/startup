@@ -104,12 +104,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - built service/index.js as a full express HTTP service for auth, uploading, login, etc.
+- [x] **Static middleware for frontend** - static middleware efficiently handles files, and uses API behavior.
+- [x] **Calls to third party endpoints** - calls OpenAI API for basic analysis
+- [x] **Backend service endpoints** - multiple backend endpoints that handle registration, sign in and out, profile access, pdf upload, and retrieval of audit history.
+- [x] **Frontend calls service endpoints** - replaced mock login/upload with real service flows.
+- [x] **Supports registration, login, logout, and restricted endpoint** - /api/auth/create, /api/auth/login, and /api/auth/logout, with verifyAuth protecting /api/profile.
 
 
 ## 🚀 DB deliverable
