@@ -11,9 +11,13 @@ const AUTH_STATES = {
 export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange }) {
   const [formUserName, setFormUserName] = useState(userName ?? '');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [history, setHistory] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mode, setMode] = useState('login');
+
+  const isSignup = mode === 'signup';
 
   useEffect(() => {
     setFormUserName(userName ?? '');
@@ -40,7 +44,19 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
     }
   }, [authState, loadAuditHistory]);
 
-  const handleAuthentication = async (action) => {
+  const switchToSignup = () => {
+    setMode('signup');
+    setStatusMessage('');
+    setEmail('');
+  };
+
+  const switchToLogin = () => {
+    setMode('login');
+    setStatusMessage('');
+    setEmail('');
+  };
+
+  const handleLogin = async () => {
     const trimmedName = formUserName.trim();
     if (!trimmedName || !password) {
       return;
@@ -50,16 +66,10 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
     setStatusMessage('');
 
     try {
-      const response =
-        action === 'create'
-          ? await createAccount(trimmedName, password)
-          : await login(trimmedName, password);
-
+      const response = await login(trimmedName, password);
       onAuthChange?.(response?.username ?? trimmedName, AUTH_STATES.AUTHENTICATED);
       setPassword('');
-      setStatusMessage(
-        action === 'create' ? 'Account created successfully.' : 'Login successful.'
-      );
+      setStatusMessage('Login successful.');
       await loadAuditHistory();
     } catch (err) {
       if (err instanceof ApiError) {
@@ -67,6 +77,40 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
       } else {
         console.error('Authentication failed', err);
         setStatusMessage('Authentication failed. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSignup = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedName = formUserName.trim();
+    if (!trimmedEmail || !trimmedName || !password) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage('');
+
+    try {
+      const response = await createAccount({
+        email: trimmedEmail,
+        username: trimmedName,
+        password,
+      });
+
+      onAuthChange?.(response?.username ?? trimmedName, AUTH_STATES.AUTHENTICATED);
+      setStatusMessage('Account created successfully.');
+      setPassword('');
+      setEmail('');
+      await loadAuditHistory();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setStatusMessage(err.message);
+      } else {
+        console.error('Account creation failed', err);
+        setStatusMessage('Account creation failed. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -85,6 +129,8 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
       onAuthChange?.('', AUTH_STATES.UNAUTHENTICATED);
       setHistory([]);
       setPassword('');
+      setEmail('');
+      setMode('login');
     }
   };
 
@@ -171,7 +217,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
         </>
       ) : (
         <section className="login-section">
-          <h2>Access AuditApp</h2>
+          <h2>{isSignup ? 'Create Your AuditApp Account' : 'Access AuditApp'}</h2>
           {statusMessage && (
             <div role="status" className="auth-feedback">
               {statusMessage}
@@ -180,9 +226,27 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              handleAuthentication('login');
+              if (isSignup) {
+                handleSignup();
+              } else {
+                handleLogin();
+              }
             }}
           >
+            {isSignup && (
+              <>
+                <label htmlFor="email">Email:</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  disabled={isSubmitting}
+                />
+              </>
+            )}
             <label htmlFor="username">Username:</label>
             <input
               type="text"
@@ -205,19 +269,29 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               disabled={isSubmitting}
             />
 
-            <button type="submit" disabled={!formUserName || !password || isSubmitting}>
-              {isSubmitting ? 'Working...' : 'Login'}
-            </button>
-            <button
-              type="button"
-              className="create-account"
-              onClick={() => handleAuthentication('create')}
-              disabled={!formUserName || !password || isSubmitting}
-            >
-              {isSubmitting ? 'Working...' : 'Create an Account'}
-            </button>
+            <div className="action-buttons">
+              <button
+                type="submit"
+                disabled={
+                  isSubmitting ||
+                  !password ||
+                  !formUserName.trim() ||
+                  (isSignup && !email.trim())
+                }
+              >
+                {isSubmitting ? 'Working...' : isSignup ? 'Create Account' : 'Login'}
+              </button>
+              <span className="button-separator">or</span>
+              <button
+                type="button"
+                className="create-account"
+                onClick={isSignup ? switchToLogin : switchToSignup}
+                disabled={isSubmitting}
+              >
+                {isSignup ? 'Back to login' : 'Create an account'}
+              </button>
+            </div>
           </form>
-          <p><em>Password authentication is backed by the Node.js service.</em></p>
         </section>
       )}
     </main>

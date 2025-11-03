@@ -39,6 +39,13 @@ Had to update class to className in my html. React components were easy to figur
 
 I'm excited to actually implement these technologies that will help my startup actually work well. It was fun to make a popup that does the websocket messages.
 
+## SERVICE
+
+node service/index.js for testing backend
+
+npm run dev for testing frontend
+ 
+
 ## Web Development & JavaScript Notes Guide
 1. In the following code, what does the <link> element do?
 

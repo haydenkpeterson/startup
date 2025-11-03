@@ -40,13 +40,13 @@ async function send(path, options = {}) {
   }
 }
 
-export function createAccount(username, password, signal) {
+export function createAccount({ email, username, password }, signal) {
   return send('/api/auth/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ email, username, password }),
     signal,
   });
 }

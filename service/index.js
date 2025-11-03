@@ -44,9 +44,14 @@ const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
 apiRouter.post('/auth/create', async (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password) {
-    res.status(400).send({ msg: 'Missing username or password' });
+  const { email, username, password } = req.body || {};
+  if (!email || !username || !password) {
+    res.status(400).send({ msg: 'Missing email, username, or password' });
+    return;
+  }
+
+  if (findUser('email', email)) {
+    res.status(409).send({ msg: 'Email already registered' });
     return;
   }
 
@@ -55,9 +60,9 @@ apiRouter.post('/auth/create', async (req, res) => {
     return;
   }
 
-  const user = await createUser(username, password);
+  const user = await createUser({ email, username, password });
   setAuthCookie(res, user.token);
-  res.send({ username: user.username });
+  res.send({ username: user.username, email: user.email });
 });
 
 apiRouter.post('/auth/login', async (req, res) => {
@@ -103,6 +108,7 @@ const verifyAuth = (req, res, next) => {
 apiRouter.get('/profile', verifyAuth, (req, res) => {
   const userAudits = audits.filter((audit) => audit.username === req.user.username);
   res.send({
+    email: req.user.email,
     username: req.user.username,
     auditsCompleted: userAudits.length,
     lastAuditId: userAudits.at(-1)?.id ?? null,
@@ -186,10 +192,11 @@ app.listen(port, () => {
   console.log(`Service listening on port ${port}`);
 });
 
-async function createUser(username, password) {
+async function createUser({ email, username, password }) {
   const passwordHash = await bcrypt.hash(password, 10);
 
   const user = {
+    email,
     username,
     password: passwordHash,
     token: uuidv4(),
