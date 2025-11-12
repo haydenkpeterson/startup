@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ApiError, fetchAuditHistory } from '../common/apiClient';
 
 const VIEW_MODES = {
@@ -10,8 +11,11 @@ export function Dashboard() {
   const [audits, setAudits] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState(VIEW_MODES.LIST);
-  const [selectedAuditId, setSelectedAuditId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialAuditParam = new URLSearchParams(location.search).get('audit');
+  const [viewMode, setViewMode] = useState(initialAuditParam ? VIEW_MODES.DETAIL : VIEW_MODES.LIST);
+  const [selectedAuditId, setSelectedAuditId] = useState(initialAuditParam);
   const [pdfUrl, setPdfUrl] = useState('');
   const [isPdfLoading, setIsPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState('');
@@ -52,10 +56,29 @@ export function Dashboard() {
 
   useEffect(() => {
     if (audits.length === 0) {
-      setSelectedAuditId(null);
-      setViewMode(VIEW_MODES.LIST);
+      const auditParam = new URLSearchParams(location.search).get('audit');
+      if (!auditParam) {
+        setSelectedAuditId(null);
+        setViewMode(VIEW_MODES.LIST);
+        if (location.search) {
+          navigate('/dashboard', { replace: true });
+        }
+      }
+      return;
     }
-  }, [audits]);
+  }, [audits, location.search, navigate]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const auditParam = params.get('audit');
+    if (auditParam && audits.some((audit) => audit.id === auditParam)) {
+      setSelectedAuditId(auditParam);
+      setViewMode(VIEW_MODES.DETAIL);
+    } else if (!auditParam && viewMode === VIEW_MODES.DETAIL) {
+      setViewMode(VIEW_MODES.LIST);
+      setSelectedAuditId(null);
+    }
+  }, [location.search, viewMode, audits]);
 
   const cleanupPdfResources = useCallback(() => {
     if (pdfAbortRef.current) {
@@ -78,24 +101,30 @@ export function Dashboard() {
   }, [cleanupPdfResources]);
 
   const decoratedAudits = useMemo(() => {
-    return (audits ?? []).map((entry) => ({
-      ...entry,
-      displayDate: entry?.createdAt
-        ? new Date(entry.createdAt).toLocaleString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-          })
-        : 'Unknown',
-      bulletPoints: entry?.summary
-        ? entry.summary
-            .split('\n')
-            .map((line) => line.trim())
-            .filter(Boolean)
-        : [],
-    }));
+    return (audits ?? [])
+      .map((entry) => {
+        const createdDate = entry?.createdAt ? new Date(entry.createdAt) : null;
+        return {
+          ...entry,
+          timestamp: createdDate ? createdDate.getTime() : 0,
+          displayDate: createdDate
+            ? createdDate.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              })
+            : 'Unknown',
+          bulletPoints: entry?.summary
+            ? entry.summary
+                .split('\n')
+                .map((line) => line.trim())
+                .filter(Boolean)
+            : [],
+        };
+      })
+      .sort((a, b) => b.timestamp - a.timestamp);
   }, [audits]);
 
   const selectedAudit = useMemo(() => {
@@ -157,21 +186,18 @@ export function Dashboard() {
   const handleSelectAudit = (auditId) => {
     setSelectedAuditId(auditId);
     setViewMode(VIEW_MODES.DETAIL);
+    navigate(`/dashboard?audit=${auditId}`, { replace: true });
   };
 
   const handleBackToList = () => {
     setViewMode(VIEW_MODES.LIST);
     setSelectedAuditId(null);
     cleanupPdfResources();
+    navigate('/dashboard', { replace: true });
   };
 
   return (
-    <main>
-      <header className="mb-4">
-        <h2>Audit Dashboard</h2>
-        <p>Review every uploaded PDF and revisit its AI summary.</p>
-      </header>
-
+    <main className="dashboard-root">
       {error && (
         <div role="alert" className="alert alert-danger">
           {error}
@@ -181,7 +207,8 @@ export function Dashboard() {
       {isLoading ? (
         <p>Loading dashboard...</p>
       ) : viewMode === VIEW_MODES.LIST ? (
-          <section className="table-container table-container--scroll dashboard-table">
+        <section className="dashboard-table">
+          <div className="dashboard-table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -214,17 +241,12 @@ export function Dashboard() {
                 )}
               </tbody>
             </table>
-          </section>
+          </div>
+        </section>
       ) : selectedAudit ? (
         <section className="dashboard-detail dashboard-detail--full">
           <div className="detail-header">
-            <button type="button" className="back-button" onClick={handleBackToList}>
-              ← Back to all audits
-            </button>
-            <div>
-              <h3 className="mb-0">{selectedAudit.filename}</h3>
-              <p className="text-muted">{selectedAudit.displayDate}</p>
-            </div>
+            <h3 className="mb-0">{selectedAudit.filename}</h3>
           </div>
           <div className="detail-content detail-content--full">
             <div className="detail-preview">
@@ -241,7 +263,6 @@ export function Dashboard() {
               )}
             </div>
             <div className="detail-summary">
-              <h4>Summary</h4>
               {selectedAudit.bulletPoints.length > 0 ? (
                 <ul>
                   {selectedAudit.bulletPoints.map((line, index) => (
@@ -253,6 +274,9 @@ export function Dashboard() {
               )}
             </div>
           </div>
+          <button type="button" className="back-button" onClick={handleBackToList}>
+            Back
+          </button>
         </section>
       ) : (
         <p>Select an audit to view it.</p>

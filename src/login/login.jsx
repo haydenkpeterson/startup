@@ -174,46 +174,6 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
             </button>
           </section>
 
-          <section className="database-placeholder">
-            <h2>Uploaded Files</h2>
-            <div className="table-container table-container--scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Filename</th>
-                    <th>Summary</th>
-                    <th>Date Uploaded</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredHistory.map((row, index) => (
-                    <tr key={`${row.id}-${index}`}>
-                      <td>{row.filename}</td>
-                      <td>
-                        <ul className="mb-0">
-                          {row.bulletPoints.length > 0 ? (
-                            row.bulletPoints.map((line, pointIndex) => (
-                              <li key={`${row.id}-summary-${pointIndex}`}>{line}</li>
-                            ))
-                          ) : (
-                            <li>No summary available.</li>
-                          )}
-                        </ul>
-                      </td>
-                      <td>{row.displayDate}</td>
-                    </tr>
-                  ))}
-                  {filteredHistory.length === 0 && (
-                    <tr>
-                      <td colSpan="3" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                        No uploads for this account yet. Try submitting a file from the Upload page.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
         </>
       ) : (
         <section className="login-section">

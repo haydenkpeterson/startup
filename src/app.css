@@ -58,19 +58,20 @@ nav ul {
 }
 
 .nav-link {
-  color: #000000 !important;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease-in-out;
   white-space: nowrap;
 }
 
-.nav-link:hover {
-  color: #34c759 !important;           /* bright green hover/active color */
+.nav-link:hover,
+.nav-link:focus {
+  color: #34c759;
 }
 
 .nav-link.active {
-  color: #000000 !important;
+  color: #000000;
 }
 
 .realtime-popup {
@@ -216,8 +217,33 @@ nav ul {
 }
 
 .dashboard-table {
-  flex: 1 1 280px;
-  max-width: 420px;
+  flex: 1 1 320px;
+  width: 100%;
+}
+
+.dashboard-table-wrapper {
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(31, 49, 36, 0.12);
+}
+
+.dashboard-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table table thead {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dashboard-table table th,
+.dashboard-table table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e3e9e5;
 }
 
 .dashboard-table table tbody tr {
@@ -229,18 +255,46 @@ nav ul {
   background-color: #e3f2fd;
 }
 
+.dashboard-cta {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-dashboard-link {
+  display: inline-block;
+  background-color: #34c759;
+  color: #ffffff;
+  padding: 0.65rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-dashboard-link:hover {
+  background-color: #2da84f;
+  transform: translateY(-1px);
+}
+
 .link-button {
   border: none;
   background: none;
-  color: #0056b3;
-  text-decoration: underline;
+  color: #111111 !important;
+  text-decoration: none;
   cursor: pointer;
   padding: 0;
   font-size: 1rem;
+  font-weight: 600;
 }
 
-.link-button:hover {
-  color: #003d80;
+.link-button:hover,
+.link-button:focus,
+.link-button:active {
+  color: #111111 !important;
+  text-decoration: none;
+  background: none;
+  outline: none;
 }
 
 .dashboard-detail {
@@ -258,17 +312,18 @@ nav ul {
 
 .detail-preview {
   flex: 1 1 320px;
-  min-height: 420px;
+  min-height: 0;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   background: #fafafa;
+  display: flex;
 }
 
 .detail-preview object {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: 0;
   border: none;
 }
 
@@ -276,6 +331,7 @@ nav ul {
   flex: 1 1 280px;
   padding: 0.5rem;
   text-align: left;
+  overflow-y: auto;
 }
 
 .detail-summary ul {
@@ -284,50 +340,60 @@ nav ul {
 
 .dashboard-detail--full {
   width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.back-button {
-  border: none;
-  background: none;
-  color: #0056b3;
-  cursor: pointer;
-  font-size: 0.95rem;
-  text-decoration: underline;
-  padding: 0;
-}
-
-.back-button:hover {
-  color: #003d80;
+.detail-header h3 {
+  margin: 0;
 }
 
 .detail-content--full {
   display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 1.5rem;
   flex-wrap: wrap;
+}
+
+.back-button {
+  margin-top: 1rem;
+  border: none;
+  background-color: #34c759;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.back-button:hover {
+  background-color: #2da84f;
+  transform: translateY(-1px);
 }
 
 /* MAIN CONTENT */
 main {
-  flex: 1; /* expands fully between header and footer */
+  flex: 1 0 auto;
+  width: 100%;
+  padding: 2em 1.5em;
+  text-align: center;
+  align-items: stretch;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;  /* centers content when short */
-  width: 100%;
-  padding: 2em 1em;
-  text-align: center;
+  justify-content: flex-start;
+  min-height: 0;
 }
 
-/* FOOTER */
 footer {
-  flex: 0 0 40px;           /* fixed footer height */
+  flex: 0 0 auto;
   background-color: #000000;
   color: white;
   text-align: center;
