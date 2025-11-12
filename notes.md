@@ -16,7 +16,7 @@ I refreshed my memory of Git commands and their purposes. I also refamiliarized 
 
 My IP address is: 18.211.42.4
 in order to ssh and use my key use ~/.ssh/production.pem
-to deploy to my server use ./deployReact.sh -k ~/.ssh/production.pem -h auditapp.click -s startup
+to deploy to my server use ./deployService.sh -k ~/.ssh/production.pem -h auditapp.click -s startup
 
 
 ## Caddy
