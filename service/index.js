@@ -9,14 +9,22 @@ const pdfParse = require('pdf-parse');
 const { v4: uuidv4 } = require('uuid');
 const OpenAI = require('openai');
 const dotenv = require('dotenv');
+const {
+  getUserByEmail,
+  getUserByUsername,
+  getUserByToken,
+  addUser: insertUser,
+  setUserToken,
+  clearUserToken,
+  addAuditRecord,
+  getAuditsForUser,
+} = require('./db');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const app = express();
 const authCookieName = 'token';
 
-const users = [];
-const audits = [];
 const auditUsage = new Map();
 
 const AUDIT_LIMIT = Number(process.env.AUDIT_LIMIT ?? 3);
@@ -50,12 +58,12 @@ apiRouter.post('/auth/create', async (req, res) => {
     return;
   }
 
-  if (findUser('email', email)) {
+  if (await getUserByEmail(email)) {
     res.status(409).send({ msg: 'Email already registered' });
     return;
   }
 
-  if (findUser('username', username)) {
+  if (await getUserByUsername(username)) {
     res.status(409).send({ msg: 'Existing user' });
     return;
   }
@@ -67,7 +75,7 @@ apiRouter.post('/auth/create', async (req, res) => {
 
 apiRouter.post('/auth/login', async (req, res) => {
   const { username, password } = req.body || {};
-  const user = findUser('username', username);
+  const user = await getUserByUsername(username);
 
   if (!user) {
     res.status(401).send({ msg: 'Unauthorized' });
@@ -80,39 +88,53 @@ apiRouter.post('/auth/login', async (req, res) => {
     return;
   }
 
-  user.token = uuidv4();
-  setAuthCookie(res, user.token);
+  const token = uuidv4();
+  await setUserToken(user._id, token);
+  setAuthCookie(res, token);
   res.send({ username: user.username });
 });
 
-apiRouter.delete('/auth/logout', (req, res) => {
-  const user = findUser('token', req.cookies[authCookieName]);
-  if (user) {
-    delete user.token;
-  }
+apiRouter.delete('/auth/logout', async (req, res, next) => {
+  try {
+    const token = req.cookies[authCookieName];
+    if (token) {
+      await clearUserToken(token);
+    }
 
-  res.clearCookie(authCookieName);
-  res.status(204).end();
+    res.clearCookie(authCookieName);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
 });
 
-const verifyAuth = (req, res, next) => {
-  const user = findUser('token', req.cookies[authCookieName]);
-  if (user) {
-    req.user = user;
-    next();
-  } else {
-    res.status(401).send({ msg: 'Unauthorized' });
+const verifyAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies[authCookieName];
+    const user = await getUserByToken(token);
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      res.status(401).send({ msg: 'Unauthorized' });
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
-apiRouter.get('/profile', verifyAuth, (req, res) => {
-  const userAudits = audits.filter((audit) => audit.username === req.user.username);
-  res.send({
-    email: req.user.email,
-    username: req.user.username,
-    auditsCompleted: userAudits.length,
-    lastAuditId: userAudits.at(-1)?.id ?? null,
-  });
+apiRouter.get('/profile', verifyAuth, async (req, res, next) => {
+  try {
+    const userAudits = await getAuditsForUser(req.user.username);
+    res.send({
+      email: req.user.email,
+      username: req.user.username,
+      auditsCompleted: userAudits.length,
+      lastAuditId: userAudits.at(-1)?.id ?? null,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => {
@@ -165,7 +187,7 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
       createdAt: new Date().toISOString(),
     };
 
-    audits.push(auditRecord);
+    await addAuditRecord(auditRecord);
     auditUsage.set(req.user.username, [...recentUsage, now]);
     res.send(auditRecord);
   } catch (err) {
@@ -174,9 +196,13 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
   }
 });
 
-apiRouter.get('/audit/history', verifyAuth, (req, res) => {
-  const userAudits = audits.filter((audit) => audit.username === req.user.username);
-  res.send(userAudits);
+apiRouter.get('/audit/history', verifyAuth, async (req, res, next) => {
+  try {
+    const userAudits = await getAuditsForUser(req.user.username);
+    res.send(userAudits);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use((err, _req, res, _next) => {
@@ -202,13 +228,7 @@ async function createUser({ email, username, password }) {
     token: uuidv4(),
   };
 
-  users.push(user);
-  return user;
-}
-
-function findUser(field, value) {
-  if (!value) return null;
-  return users.find((u) => u[field] === value);
+  return insertUser(user);
 }
 
 function setAuthCookie(res, authToken) {
