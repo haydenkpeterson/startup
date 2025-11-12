@@ -94,10 +94,20 @@ async function addAuditRecord(auditRecord) {
   return auditRecord;
 }
 
-async function getAuditsForUser(username) {
+async function getAuditsForUser(username, options = {}) {
   if (!username) return [];
   await ensureConnection();
-  return auditsCollection.find({ username }).sort({ createdAt: 1, _id: 1 }).toArray();
+  const projection = options.includeFile ? undefined : { file: 0 };
+  return auditsCollection
+    .find({ username }, { projection })
+    .sort({ createdAt: 1, _id: 1 })
+    .toArray();
+}
+
+async function getAuditById(auditId) {
+  if (!auditId) return null;
+  await ensureConnection();
+  return auditsCollection.findOne({ id: auditId });
 }
 
 module.exports = {
@@ -109,4 +119,5 @@ module.exports = {
   clearUserToken,
   addAuditRecord,
   getAuditsForUser,
+  getAuditById,
 };

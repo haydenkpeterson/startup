@@ -208,6 +208,111 @@ nav ul {
   background-color: #f3f7f4;
 }
 
+.dashboard-layout {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.dashboard-table {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.dashboard-table table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-table table tbody tr.selected-row {
+  background-color: #e3f2fd;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  color: #0056b3;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.link-button:hover {
+  color: #003d80;
+}
+
+.dashboard-detail {
+  flex: 2 1 480px;
+  min-height: 400px;
+  width: 100%;
+}
+
+.detail-content {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.detail-preview {
+  flex: 1 1 320px;
+  min-height: 420px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.detail-preview object {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  border: none;
+}
+
+.detail-summary {
+  flex: 1 1 280px;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.detail-summary ul {
+  padding-left: 1.25rem;
+}
+
+.dashboard-detail--full {
+  width: 100%;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  border: none;
+  background: none;
+  color: #0056b3;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.back-button:hover {
+  color: #003d80;
+}
+
+.detail-content--full {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 /* MAIN CONTENT */
 main {
   flex: 1; /* expands fully between header and footer */

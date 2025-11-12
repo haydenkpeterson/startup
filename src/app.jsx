@@ -4,6 +4,7 @@ import './app.css';
 
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Login } from './login/login';
+import { Dashboard } from './dashboard/dashboard';
 import { Home } from './home/home';
 import { Upload } from './upload/upload';
 import { ApiError, fetchProfile } from './common/apiClient';
@@ -79,6 +80,9 @@ export default function App() {
                 <ul>
                     <li><NavLink className="nav-link" to="/">Home</NavLink></li>
                     {isAuthenticated && (
+                        <li><NavLink className="nav-link" to="/dashboard">Dashboard</NavLink></li>
+                    )}
+                    {isAuthenticated && (
                         <li><NavLink className="nav-link" to="/upload">Upload</NavLink></li>
                     )}
                     <li>
@@ -96,6 +100,10 @@ export default function App() {
                     <Route
                         path='/upload'
                         element={isAuthenticated ? <Upload userName={userName} /> : <LoginRedirectNotice />}
+                    />
+                    <Route
+                        path='/dashboard'
+                        element={isAuthenticated ? <Dashboard /> : <LoginRedirectNotice />}
                     />
                     <Route
                         path='/login'

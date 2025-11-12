@@ -18,6 +18,7 @@ const {
   clearUserToken,
   addAuditRecord,
   getAuditsForUser,
+  getAuditById,
 } = require('./db');
 
 dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
@@ -126,11 +127,12 @@ const verifyAuth = async (req, res, next) => {
 apiRouter.get('/profile', verifyAuth, async (req, res, next) => {
   try {
     const userAudits = await getAuditsForUser(req.user.username);
+    const sanitizedAudits = userAudits.map(sanitizeAuditForClient);
     res.send({
       email: req.user.email,
       username: req.user.username,
-      auditsCompleted: userAudits.length,
-      lastAuditId: userAudits.at(-1)?.id ?? null,
+      auditsCompleted: sanitizedAudits.length,
+      lastAuditId: sanitizedAudits.at(-1)?.id ?? null,
     });
   } catch (err) {
     next(err);
@@ -185,11 +187,14 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
       filename: req.file.originalname,
       summary,
       createdAt: new Date().toISOString(),
+      file: req.file.buffer,
+      contentType: req.file.mimetype ?? 'application/pdf',
+      fileSize: req.file.size ?? req.file.buffer.length,
     };
 
     await addAuditRecord(auditRecord);
     auditUsage.set(req.user.username, [...recentUsage, now]);
-    res.send(auditRecord);
+    res.send(sanitizeAuditForClient(auditRecord));
   } catch (err) {
     console.error('Audit error', err);
     res.status(500).send({ msg: 'Failed to audit PDF' });
@@ -199,7 +204,32 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
 apiRouter.get('/audit/history', verifyAuth, async (req, res, next) => {
   try {
     const userAudits = await getAuditsForUser(req.user.username);
-    res.send(userAudits);
+    res.send(userAudits.map(sanitizeAuditForClient));
+  } catch (err) {
+    next(err);
+  }
+});
+
+apiRouter.get('/audit/:id/file', verifyAuth, async (req, res, next) => {
+  try {
+    const audit = await getAuditById(req.params.id);
+    if (!audit || audit.username !== req.user.username) {
+      res.status(404).send({ msg: 'File not found' });
+      return;
+    }
+
+    if (!audit.file) {
+      res.status(404).send({ msg: 'No file stored for this audit' });
+      return;
+    }
+
+    const fileBuffer = audit.file?.buffer ? audit.file.buffer : audit.file;
+    res.setHeader('Content-Type', audit.contentType ?? 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${audit.filename ?? 'audit.pdf'}"`
+    );
+    res.send(fileBuffer);
   } catch (err) {
     next(err);
   }
@@ -229,6 +259,12 @@ async function createUser({ email, username, password }) {
   };
 
   return insertUser(user);
+}
+
+function sanitizeAuditForClient(audit) {
+  if (!audit) return audit;
+  const { file, contentType, _id, ...rest } = audit;
+  return rest;
 }
 
 function setAuthCookie(res, authToken) {
