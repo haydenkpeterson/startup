@@ -71,14 +71,15 @@ export default function App() {
         <BrowserRouter>
             <div className="body">
             <header>
-                <img
-                src="audit app logo maybe.png"
-                alt="AuditApp Logo"
-                className="logo"
-                />
+                <NavLink to="/" className="logo-link" aria-label="AuditApp Home">
+                    <img
+                    src="audit app logo maybe.png"
+                    alt="AuditApp Logo"
+                    className="logo"
+                    />
+                </NavLink>
                 <nav>
                 <ul>
-                    <li><NavLink className="nav-link" to="/">Home</NavLink></li>
                     {isAuthenticated && (
                         <li><NavLink className="nav-link" to="/dashboard">Dashboard</NavLink></li>
                     )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ApiError, fetchAuditHistory } from '../common/apiClient';
+import { renderMarkdown } from '../common/markdown';
 
 const VIEW_MODES = {
   LIST: 'list',
@@ -208,6 +209,7 @@ export function Dashboard() {
         <p>Loading dashboard...</p>
       ) : viewMode === VIEW_MODES.LIST ? (
         <section className="dashboard-table">
+          <h2 className="dashboard-title">Dashboard</h2>
           <div className="dashboard-table-wrapper">
             <table>
               <thead>
@@ -264,11 +266,10 @@ export function Dashboard() {
             </div>
             <div className="detail-summary">
               {selectedAudit.bulletPoints.length > 0 ? (
-                <ul>
-                  {selectedAudit.bulletPoints.map((line, index) => (
-                    <li key={`${selectedAudit.id}-summary-${index}`}>{line}</li>
-                  ))}
-                </ul>
+                <div
+                  className="markdown-summary"
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(selectedAudit.summary) }}
+                />
               ) : (
                 <p>No summary available.</p>
               )}
