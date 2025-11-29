@@ -10,16 +10,20 @@ export function useChatSocket({ enabled }) {
   const [status, setStatus] = useState(STATUS_IDLE);
   const [chatLog, setChatLog] = useState([]);
   const socketRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const cleanupSocket = useCallback(() => {
-    if (socketRef.current) {
-      try {
-        socketRef.current.close();
-      } catch (err) {
-        // Ignore close errors
-      }
-      socketRef.current = null;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
+    if (!socketRef.current) return;
+    try {
+      socketRef.current.close();
+    } catch (err) {
+      // Ignore close errors
+    }
+    socketRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -30,10 +34,26 @@ export function useChatSocket({ enabled }) {
     }
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = `${protocol}://${window.location.host}`;
+    const envUrl = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_WS_URL : null;
+
+    const devPort = window.location.port && window.location.port !== '80' && window.location.port !== '443';
+    const fallbackHost = devPort ? `${window.location.hostname}:4000` : window.location.host;
+    const wsUrl = envUrl || `${protocol}://${fallbackHost}/ws`;
+
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
     setStatus(STATUS_CONNECTING);
+
+    timeoutRef.current = setTimeout(() => {
+      if (socket.readyState === WebSocket.CONNECTING) {
+        setStatus(STATUS_ERROR);
+        setChatLog((prev) => [
+          ...prev,
+          { id: `err-${Date.now()}`, author: 'system', text: 'WebSocket connection timeout', error: true },
+        ]);
+        socket.close();
+      }
+    }, 5000);
 
     socket.onopen = () => {
       setStatus(STATUS_OPEN);
@@ -43,8 +63,18 @@ export function useChatSocket({ enabled }) {
       setStatus(STATUS_ERROR);
     };
 
-    socket.onclose = () => {
-      setStatus((prev) => (prev === STATUS_OPEN ? STATUS_CLOSED : prev));
+    socket.onclose = (event) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setStatus(STATUS_CLOSED);
+      if (event?.code === 1008) {
+        setChatLog((prev) => [
+          ...prev,
+          { id: `err-${Date.now()}`, author: 'system', text: 'WebSocket unauthorized', error: true },
+        ]);
+      }
     };
 
     socket.onmessage = (event) => {

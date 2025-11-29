@@ -23,10 +23,10 @@ export function Upload({ userName }) {
 
   const isAuthenticated = Boolean(userName);
   const { chatLog, status: chatStatus, sendMessage } = useChatSocket({
-    enabled: isAuthenticated && showPopup,
+    enabled: isAuthenticated,
   });
 
-  const disabled = analysisStatus === 'processing' || !selectedFile;
+  const disabled = analysisStatus === 'processing' || !selectedFile || chatStatus !== 'open';
 
   return (
     <main>

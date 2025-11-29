@@ -88,7 +88,7 @@ async function handleUserMessage({ socket, data }) {
 }
 
 function initializeWebSocketServer(httpServer) {
-  const socketServer = new WebSocketServer({ server: httpServer });
+  const socketServer = new WebSocketServer({ server: httpServer, path: '/ws' });
 
   socketServer.on('connection', async (socket, req) => {
     const cookies = parseCookies(req.headers.cookie || '');

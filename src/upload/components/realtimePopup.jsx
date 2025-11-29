@@ -53,7 +53,7 @@ export function RealtimePopup({
             <div className="realtime-popup__chat-log" aria-live="polite">
               {chatLog.length === 0 ? (
                 <div className="realtime-popup__chat-empty">
-                  {isComplete ? 'Ask a follow-up about your audit.' : 'Chat available after analysis completes.'}
+                  {isComplete ? 'Connected. You can ask about your audit.' : 'Waiting for analysis to finish.'}
                 </div>
               ) : (
                 chatLog.map((entry) => (
