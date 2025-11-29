@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuditService } from '../common/useAuditService';
 import { RealtimePopup } from './components/realtimePopup';
+import { useChatSocket } from '../common/useChatSocket';
 
 export function Upload({ userName }) {
   const {
@@ -19,6 +20,11 @@ export function Upload({ userName }) {
     handleFileTriggerClick,
     fileInputRef,
   } = useAuditService(userName);
+
+  const isAuthenticated = Boolean(userName);
+  const { chatLog, status: chatStatus, sendMessage } = useChatSocket({
+    enabled: isAuthenticated && showPopup,
+  });
 
   const disabled = analysisStatus === 'processing' || !selectedFile;
 
@@ -77,6 +83,9 @@ export function Upload({ userName }) {
           progress={progressPercent}
           isComplete={analysisStatus === 'complete'}
           onClose={handleCancel}
+          chatLog={chatLog}
+          connectionStatus={chatStatus}
+          onSendMessage={sendMessage}
         />
       )}
     </main>
