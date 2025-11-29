@@ -1,5 +1,6 @@
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
+const http = require('http');
 const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -9,6 +10,7 @@ const pdfParse = require('pdf-parse');
 const { v4: uuidv4 } = require('uuid');
 const OpenAI = require('openai');
 const dotenv = require('dotenv');
+const { initializeWebSocketServer } = require('./websocket');
 const {
   getUserByEmail,
   getUserByUsername,
@@ -244,7 +246,10 @@ app.use((_req, res) => {
   res.sendFile('index.html', { root: publicDir });
 });
 
-app.listen(port, () => {
+const server = http.createServer(app);
+initializeWebSocketServer(server);
+
+server.listen(port, () => {
   console.log(`Service listening on port ${port}`);
 });
 
