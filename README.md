@@ -123,7 +123,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Backend listens for WebSocket connection** - I did not complete this part of the deliverable.
+- [ ] **Backend listens for WebSocket connection** - Backend now wraps Express in an HTTP server and runs a WebSocket server. It listens for WebSocket connections.
 - [ ] **Frontend makes WebSocket connection** - I did not complete this part of the deliverable.
 - [ ] **Data sent over WebSocket connection** - I did not complete this part of the deliverable.
 - [ ] **WebSocket data displayed** - I did not complete this part of the deliverable.
