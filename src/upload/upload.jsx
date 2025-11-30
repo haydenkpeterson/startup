@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuditService } from '../common/useAuditService';
 import { RealtimePopup } from './components/realtimePopup';
-import { useChatSocket } from '../common/useChatSocket';
+import { useAuditUpdatesSocket } from '../common/useAuditUpdatesSocket';
 
 export function Upload({ userName }) {
   const {
@@ -22,7 +22,7 @@ export function Upload({ userName }) {
   } = useAuditService(userName);
 
   const isAuthenticated = Boolean(userName);
-  const { statusLog, status: chatStatus } = useChatSocket({
+  const { statusLog, status: chatStatus } = useAuditUpdatesSocket({
     enabled: isAuthenticated,
   });
 

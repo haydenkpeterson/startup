@@ -6,7 +6,7 @@ const STATUS_OPEN = 'open';
 const STATUS_CLOSED = 'closed';
 const STATUS_ERROR = 'error';
 
-export function useChatSocket({ enabled }) {
+export function useAuditUpdatesSocket({ enabled }) {
   const [status, setStatus] = useState(STATUS_IDLE);
   const [statusLog, setStatusLog] = useState([]);
   const socketRef = useRef(null);
