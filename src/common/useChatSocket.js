@@ -8,11 +8,18 @@ const STATUS_ERROR = 'error';
 
 export function useChatSocket({ enabled }) {
   const [status, setStatus] = useState(STATUS_IDLE);
-  const [chatLog, setChatLog] = useState([]);
+  const [statusLog, setStatusLog] = useState([]);
   const socketRef = useRef(null);
   const timeoutRef = useRef(null);
+  const reconnectRef = useRef(null);
+  const attemptRef = useRef(0);
+  const lastTimeoutRef = useRef(0);
 
   const cleanupSocket = useCallback(() => {
+    if (reconnectRef.current) {
+      clearTimeout(reconnectRef.current);
+      reconnectRef.current = null;
+    }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -35,86 +42,86 @@ export function useChatSocket({ enabled }) {
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const envUrl = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_WS_URL : null;
+    const wsUrl = envUrl || `${protocol}://${window.location.host}/ws`;
 
-    const devPort = window.location.port && window.location.port !== '80' && window.location.port !== '443';
-    const fallbackHost = devPort ? `${window.location.hostname}:4000` : window.location.host;
-    const wsUrl = envUrl || `${protocol}://${fallbackHost}/ws`;
+    const connect = () => {
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
+      setStatus(STATUS_CONNECTING);
 
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
-    setStatus(STATUS_CONNECTING);
-
-    timeoutRef.current = setTimeout(() => {
-      if (socket.readyState === WebSocket.CONNECTING) {
-        setStatus(STATUS_ERROR);
-        setChatLog((prev) => [
-          ...prev,
-          { id: `err-${Date.now()}`, author: 'system', text: 'WebSocket connection timeout', error: true },
-        ]);
-        socket.close();
-      }
-    }, 5000);
-
-    socket.onopen = () => {
-      setStatus(STATUS_OPEN);
-    };
-
-    socket.onerror = () => {
-      setStatus(STATUS_ERROR);
-    };
-
-    socket.onclose = (event) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      setStatus(STATUS_CLOSED);
-      if (event?.code === 1008) {
-        setChatLog((prev) => [
-          ...prev,
-          { id: `err-${Date.now()}`, author: 'system', text: 'WebSocket unauthorized', error: true },
-        ]);
-      }
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        if (message.type === 'ai_token') {
-          const aiId = `ai-${message.id}`;
-          setChatLog((prev) => {
-            const existing = prev.find((m) => m.id === aiId);
-            if (existing) {
-              return prev.map((m) =>
-                m.id === aiId ? { ...m, text: (m.text || '') + (message.text || ''), streaming: true } : m
-              );
-            }
-            return [...prev, { id: aiId, author: 'ai', text: message.text || '', streaming: true }];
-          });
-        } else if (message.type === 'ai_complete') {
-          const aiId = `ai-${message.id}`;
-          setChatLog((prev) => {
-            const existing = prev.find((m) => m.id === aiId);
-            if (existing) {
-              return prev.map((m) =>
-                m.id === aiId
-                  ? { ...m, text: message.text || existing.text || '', streaming: false }
-                  : m
-              );
-            }
-            return [...prev, { id: aiId, author: 'ai', text: message.text || '', streaming: false }];
-          });
-        } else if (message.type === 'error') {
-          setChatLog((prev) => [
-            ...prev,
-            { id: `err-${Date.now()}`, author: 'system', text: message.msg || 'Chat error', error: true },
-          ]);
+      timeoutRef.current = setTimeout(() => {
+        if (socket.readyState === WebSocket.CONNECTING) {
           setStatus(STATUS_ERROR);
+          const now = Date.now();
+          if (!lastTimeoutRef.current || now - lastTimeoutRef.current > 1000) {
+            lastTimeoutRef.current = now;
+            setStatusLog((prev) => [
+              ...prev,
+              { id: `err-${now}`, text: `WebSocket connection timeout (${wsUrl})`, error: true },
+            ]);
+          }
+          socket.close();
         }
-      } catch (err) {
-        // Ignore malformed messages
-      }
+      }, 5000);
+
+      socket.onopen = () => {
+        attemptRef.current = 0;
+        setStatus(STATUS_OPEN);
+        setStatusLog((prev) => [
+          ...prev,
+          { id: `status-${Date.now()}`, text: 'Connected to realtime updates.' },
+        ]);
+      };
+
+      socket.onerror = () => {
+        setStatus(STATUS_ERROR);
+      };
+
+      socket.onclose = (event) => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        setStatus(STATUS_CLOSED);
+        if (event?.code === 1008) {
+          setStatusLog((prev) => [
+            ...prev,
+            { id: `err-${Date.now()}`, text: 'WebSocket unauthorized', error: true },
+          ]);
+          return;
+        }
+
+        if (enabled) {
+          const delay = Math.min(30000, 2000 * Math.max(1, attemptRef.current + 1));
+          attemptRef.current += 1;
+          reconnectRef.current = setTimeout(() => {
+            connect();
+          }, delay);
+        }
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'status') {
+            setStatusLog((prev) => [
+              ...prev,
+              { id: `status-${Date.now()}`, text: message.text || '' },
+            ]);
+          } else if (message.type === 'error') {
+            setStatusLog((prev) => [
+              ...prev,
+              { id: `err-${Date.now()}`, text: message.msg || 'Status error', error: true },
+            ]);
+            setStatus(STATUS_ERROR);
+          }
+        } catch (err) {
+          // Ignore malformed messages
+        }
+      };
     };
+
+    connect();
 
     return () => {
       cleanupSocket();
@@ -122,36 +129,8 @@ export function useChatSocket({ enabled }) {
     };
   }, [cleanupSocket, enabled]);
 
-  const sendMessage = useCallback(
-    (text) => {
-      const socket = socketRef.current;
-      if (!socket || socket.readyState !== WebSocket.OPEN || !text?.trim()) {
-        return false;
-      }
-
-      const id = `msg-${Date.now()}`;
-      const payload = { type: 'user_message', id, text };
-
-      setChatLog((prev) => [
-        ...prev,
-        { id, author: 'user', text },
-        { id: `ai-${id}`, author: 'ai', text: '', streaming: true },
-      ]);
-
-      socket.send(JSON.stringify(payload));
-      return true;
-    },
-    []
-  );
-
-  const resetChat = useCallback(() => {
-    setChatLog([]);
-  }, []);
-
   return {
-    chatLog,
+    statusLog,
     status,
-    sendMessage,
-    resetChat,
   };
 }

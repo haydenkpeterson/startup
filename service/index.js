@@ -10,7 +10,7 @@ const pdfParse = require('pdf-parse');
 const { v4: uuidv4 } = require('uuid');
 const OpenAI = require('openai');
 const dotenv = require('dotenv');
-const { initializeWebSocketServer } = require('./websocket');
+const { initializeWebSocketServer, sendStatusUpdate } = require('./websocket');
 const {
   getUserByEmail,
   getUserByUsername,
@@ -153,6 +153,7 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
   }
 
   try {
+    sendStatusUpdate(req.user.username, 'Starting audit...');
     const now = Date.now();
     const usage = auditUsage.get(req.user.username) || [];
     const recentUsage = usage.filter((timestamp) => now - timestamp < AUDIT_WINDOW_MS);
@@ -161,9 +162,11 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
       return;
     }
 
+    sendStatusUpdate(req.user.username, 'Reading PDF content...');
     const { text } = await pdfParse(req.file.buffer);
     const trimmed = text.length > 4000 ? `${text.slice(0, 4000)}...` : text;
 
+    sendStatusUpdate(req.user.username, 'Sending content to OpenAI for analysis...');
     const completion = await openaiClient.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -196,9 +199,11 @@ apiRouter.post('/audit', verifyAuth, upload.single('file'), async (req, res) => 
 
     await addAuditRecord(auditRecord);
     auditUsage.set(req.user.username, [...recentUsage, now]);
+    sendStatusUpdate(req.user.username, 'Audit complete.');
     res.send(sanitizeAuditForClient(auditRecord));
   } catch (err) {
     console.error('Audit error', err);
+    sendStatusUpdate(req.user.username, 'Audit failed. Please try again.');
     res.status(500).send({ msg: 'Failed to audit PDF' });
   }
 });

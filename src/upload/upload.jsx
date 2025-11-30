@@ -22,11 +22,11 @@ export function Upload({ userName }) {
   } = useAuditService(userName);
 
   const isAuthenticated = Boolean(userName);
-  const { chatLog, status: chatStatus, sendMessage } = useChatSocket({
+  const { statusLog, status: chatStatus } = useChatSocket({
     enabled: isAuthenticated,
   });
 
-  const disabled = analysisStatus === 'processing' || !selectedFile || chatStatus !== 'open';
+  const disabled = analysisStatus === 'processing' || !selectedFile;
 
   return (
     <main>
@@ -83,9 +83,8 @@ export function Upload({ userName }) {
           progress={progressPercent}
           isComplete={analysisStatus === 'complete'}
           onClose={handleCancel}
-          chatLog={chatLog}
+          statusLog={statusLog}
           connectionStatus={chatStatus}
-          onSendMessage={sendMessage}
         />
       )}
     </main>

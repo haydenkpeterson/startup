@@ -1,16 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 export function RealtimePopup({
   message,
   progress,
   isComplete,
   onClose,
-  chatLog = [],
+  statusLog = [],
   connectionStatus = 'idle',
-  onSendMessage,
 }) {
-  const [inputValue, setInputValue] = useState('');
-
   const connectionLabel = useMemo(() => {
     if (connectionStatus === 'open') return 'Connected';
     if (connectionStatus === 'connecting') return 'Connecting...';
@@ -18,17 +15,6 @@ export function RealtimePopup({
     if (connectionStatus === 'closed') return 'Disconnected';
     return 'Idle';
   }, [connectionStatus]);
-
-  const canChat = isComplete && connectionStatus === 'open';
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!inputValue.trim() || !canChat) return;
-    const ok = onSendMessage ? onSendMessage(inputValue.trim()) : false;
-    if (ok !== false) {
-      setInputValue('');
-    }
-  };
 
   return (
     <div className="realtime-popup" role="dialog" aria-modal="true">
@@ -49,38 +35,23 @@ export function RealtimePopup({
           </div>
 
           <div className="realtime-popup__chat">
-            <div className="realtime-popup__chat-status">Chat: {connectionLabel}</div>
+            <div className="realtime-popup__chat-status">Updates: {connectionLabel}</div>
             <div className="realtime-popup__chat-log" aria-live="polite">
-              {chatLog.length === 0 ? (
+              {statusLog.length === 0 ? (
                 <div className="realtime-popup__chat-empty">
-                  {isComplete ? 'Connected. You can ask about your audit.' : 'Waiting for analysis to finish.'}
+                  {isComplete ? 'Waiting for updates...' : 'Connecting to realtime updates...'}
                 </div>
               ) : (
-                chatLog.map((entry) => (
+                statusLog.map((entry) => (
                   <div
                     key={entry.id}
-                    className={`realtime-popup__chat-line realtime-popup__chat-line--${entry.author}`}
+                    className={`realtime-popup__chat-line${entry.error ? ' realtime-popup__chat-line--error' : ''}`}
                   >
-                    <strong>{entry.author === 'user' ? 'You' : entry.author === 'ai' ? 'AI' : 'System'}:</strong>{' '}
-                    <span>
-                      {entry.text || (entry.streaming ? '...' : '')}
-                    </span>
+                    <span>{entry.text || ''}</span>
                   </div>
                 ))
               )}
             </div>
-            <form className="realtime-popup__chat-form" onSubmit={handleSubmit}>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={isComplete ? "Ask a question about your audit..." : "Available after analysis completes"}
-                disabled={!canChat}
-              />
-              <button type="submit" disabled={!canChat || !inputValue.trim()}>
-                Send
-              </button>
-            </form>
           </div>
 
           <button

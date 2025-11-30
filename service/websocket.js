@@ -1,16 +1,9 @@
-const path = require('path');
 const { WebSocketServer, WebSocket } = require('ws');
-const OpenAI = require('openai');
-const dotenv = require('dotenv');
 const { getUserByToken } = require('./db');
 
 const AUTH_COOKIE = 'token';
 const KEEPALIVE_MS = 10000;
-
-dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
-
-const openaiApiKey = process.env.OPENAI_API_KEY;
-const openaiClient = openaiApiKey ? new OpenAI({ apiKey: openaiApiKey }) : null;
+const activeSockets = new Map(); // username -> Set<WebSocket>
 
 function parseCookies(header = '') {
   return Object.fromEntries(
@@ -27,64 +20,13 @@ function sendJson(socket, payload) {
   socket.send(JSON.stringify(payload));
 }
 
-async function handleUserMessage({ socket, data }) {
-  if (!openaiClient) {
-    sendJson(socket, { type: 'error', msg: 'OpenAI API not configured' });
-    return;
-  }
+function sendStatusUpdate(username, text) {
+  if (!username || !text) return;
 
-  let parsed;
-  try {
-    parsed = JSON.parse(data);
-  } catch (err) {
-    sendJson(socket, { type: 'error', msg: 'Invalid message format' });
-    return;
-  }
-
-  if (parsed?.type !== 'user_message' || !parsed.text) {
-    sendJson(socket, { type: 'error', msg: 'Unsupported message' });
-    return;
-  }
-
-  const messageId = parsed.id || Date.now().toString();
-
-  try {
-    const stream = await openaiClient.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are a helpful auditing chat assistant. Provide concise, clear replies and keep responses focused on the user query.',
-        },
-        {
-          role: 'user',
-          content: parsed.text,
-        },
-      ],
-      stream: true,
-      temperature: 0.2,
-    });
-
-    let fullText = '';
-    for await (const chunk of stream) {
-      const deltaContent = chunk.choices?.[0]?.delta?.content;
-      const delta =
-        Array.isArray(deltaContent) && deltaContent.length > 0
-          ? deltaContent.map((part) => part.text || '').join('')
-          : deltaContent || '';
-
-      if (delta) {
-        fullText += delta;
-        sendJson(socket, { type: 'ai_token', id: messageId, text: delta });
-      }
-    }
-
-    sendJson(socket, { type: 'ai_complete', id: messageId, text: fullText });
-  } catch (err) {
-    console.error('WebSocket AI error', err);
-    sendJson(socket, { type: 'error', msg: 'AI response failed' });
-  }
+  const sockets = activeSockets.get(username);
+  if (!sockets || sockets.size === 0) return;
+  sockets.forEach((socket) => sendJson(socket, { type: 'status', text }));
+  console.log(`[ws] status -> ${username}: ${text}`);
 }
 
 function initializeWebSocketServer(httpServer) {
@@ -96,6 +38,7 @@ function initializeWebSocketServer(httpServer) {
     const user = token ? await getUserByToken(token) : null;
 
     if (!user) {
+      console.warn('[ws] unauthorized connection attempt');
       socket.close(1008, 'Unauthorized');
       return;
     }
@@ -103,12 +46,27 @@ function initializeWebSocketServer(httpServer) {
     socket.isAlive = true;
     socket.user = { username: user.username };
 
-    socket.on('pong', () => {
-      socket.isAlive = true;
+    if (!activeSockets.has(user.username)) {
+      activeSockets.set(user.username, new Set());
+    }
+    activeSockets.get(user.username).add(socket);
+
+    console.log(`[ws] connected ${user.username}`);
+    sendJson(socket, { type: 'status', text: 'Connected to realtime audit updates.' });
+
+    socket.on('close', () => {
+      const set = activeSockets.get(user.username);
+      if (set) {
+        set.delete(socket);
+        if (set.size === 0) {
+          activeSockets.delete(user.username);
+        }
+      }
+      console.log(`[ws] disconnected ${user.username}`);
     });
 
-    socket.on('message', (data) => {
-      handleUserMessage({ socket, data });
+    socket.on('pong', () => {
+      socket.isAlive = true;
     });
   });
 
@@ -126,9 +84,10 @@ function initializeWebSocketServer(httpServer) {
 
   socketServer.on('close', () => {
     clearInterval(interval);
+    activeSockets.clear();
   });
 
   return socketServer;
 }
 
-module.exports = { initializeWebSocketServer };
+module.exports = { initializeWebSocketServer, sendStatusUpdate };
