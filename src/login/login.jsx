@@ -168,7 +168,7 @@ export function Login({ userName, authState = AUTH_STATES.UNKNOWN, onAuthChange 
               </span>
               !
             </h2>
-            <p>You are connected to the live AuditApp service. Manage recent audits below.</p>
+            <p>You are now connected to the live AuditApp service.</p>
             <button type="button" onClick={handleLogout} disabled={isSubmitting}>
               Logout
             </button>
