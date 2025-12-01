@@ -274,3 +274,8 @@ Or:
 
 new Promise(r => setTimeout(() => r("hi"), 1000)).then(console.log);
 // Output after 1 second: hi
+
+## Notes for Future Hayden
+websockets might not be the best fucntionality for status updates.
+implement banking data with plaid api.
+currently there are no check on whether a username already exists, or a password already exists, or an email is the correct format. Flesh that out.
