@@ -15,6 +15,10 @@ export function useAuditUpdatesSocket({ enabled }) {
   const attemptRef = useRef(0);
   const lastTimeoutRef = useRef(0);
 
+  const clearLog = useCallback(() => {
+    setStatusLog([]);
+  }, []);
+
   const cleanupSocket = useCallback(() => {
     if (reconnectRef.current) {
       clearTimeout(reconnectRef.current);
@@ -132,5 +136,6 @@ export function useAuditUpdatesSocket({ enabled }) {
   return {
     statusLog,
     status,
+    clearLog,
   };
 }

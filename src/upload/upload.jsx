@@ -22,7 +22,7 @@ export function Upload({ userName }) {
   } = useAuditService(userName);
 
   const isAuthenticated = Boolean(userName);
-  const { statusLog, status: chatStatus } = useAuditUpdatesSocket({
+  const { statusLog, status: chatStatus, clearLog } = useAuditUpdatesSocket({
     enabled: isAuthenticated,
   });
 
@@ -39,7 +39,13 @@ export function Upload({ userName }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <form
+        onSubmit={(event) => {
+          clearLog();
+          handleSubmit(event);
+        }}
+        encType="multipart/form-data"
+      >
         <div className="file-picker">
           <button
             type="button"
