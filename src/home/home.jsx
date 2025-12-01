@@ -4,11 +4,14 @@ export function Home() {
   return (
     <main>
       <h2>Welcome to AuditApp</h2>
-      <p>Securely auditing your finances using AI.</p>
+      <p>Your AI audit helper.</p>
       <p><strong>Author:</strong> Hayden Peterson</p>
       <p>
-        View the code on 
-        <a href="https://github.com/haydenkpeterson/startup" target="_blank">GitHub</a>.
+        View the code on{' '}
+        <a href="https://github.com/haydenkpeterson/startup" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+        .
       </p>
     </main>
   );
